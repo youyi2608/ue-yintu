@@ -1189,20 +1189,23 @@ async function selfTest() {
 <script>
 /* --- Android APK 分享接入（仅 APK 内使用，网页版没有这段） --- */
 (function () {
-  function feed(url) {
-    fetch(url).then(function (r) { return r.blob(); }).then(function (blob) {
-      var name = 'shared.' + ((blob.type || 'image/png').split('/')[1] || 'png');
-      var file = new File([blob], name, { type: blob.type || 'image/png' });
-      var inp = document.getElementById('file');
-      try {
-        var dt = new DataTransfer();
-        dt.items.add(file);
-        inp.files = dt.files;
-        inp.dispatchEvent(new Event('change'));
-      } catch (e) {
-        try { window.UE_SHARED_BLOB = file; } catch (e2) {}
-      }
-    });
+  function b64ToBlob(dataUrl) {
+    var i = dataUrl.indexOf(',');
+    var meta = dataUrl.substring(5, i);
+    var bin = atob(dataUrl.substring(i + 1));
+    var len = bin.length, arr = new Uint8Array(len);
+    for (var k = 0; k < len; k++) arr[k] = bin.charCodeAt(k);
+    return new Blob([arr], { type: (meta.split(';')[0] || 'image/png') });
+  }
+  function feed(dataUrl) {
+    var blob = b64ToBlob(dataUrl);
+    var name = 'shared.' + ((blob.type || 'image/png').split('/')[1] || 'png');
+    var file = new File([blob], name, { type: blob.type || 'image/png' });
+    var inp = document.getElementById('file');
+    var dt = new DataTransfer();
+    dt.items.add(file);
+    inp.files = dt.files;
+    inp.dispatchEvent(new Event('change'));
   }
   window.UEOnShared = function () {
     if (!window.UEAndroid || !window.UEAndroid.getShared) return;

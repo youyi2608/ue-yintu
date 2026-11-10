@@ -97,6 +97,8 @@ public class MainActivity extends Activity {
         } else if (Intent.ACTION_SEND_MULTIPLE.equals(action)) {
             ArrayList<Uri> list = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
             if (list != null && !list.isEmpty()) uri = list.get(0);
+        } else if (Intent.ACTION_VIEW.equals(action)) {
+            uri = intent.getData();
         }
         if (uri == null) {
             Toast.makeText(this, "ue隐图只处理图片：请长按图片再分享", Toast.LENGTH_LONG).show();

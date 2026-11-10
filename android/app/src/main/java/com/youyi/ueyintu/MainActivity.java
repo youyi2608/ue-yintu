@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
+import android.widget.Toast;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -97,7 +98,10 @@ public class MainActivity extends Activity {
             ArrayList<Uri> list = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
             if (list != null && !list.isEmpty()) uri = list.get(0);
         }
-        if (uri == null) return;
+        if (uri == null) {
+            Toast.makeText(this, "ue隐图只处理图片：请长按图片再分享", Toast.LENGTH_LONG).show();
+            return;
+        }
         sharedData = toDataUrl(uri);
         if (sharedData == null) return;
         web.postDelayed(new Runnable() {

@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="ue隐图">
 <meta name="format-detection" content="telephone=no">
-<title>ue隐图 · 手机版 v0.2</title>
+<title>ue隐图 · 手机版 v0.3.1</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="图标192.png">
 <link rel="apple-touch-icon" href="图标192.png">
@@ -151,6 +151,45 @@ main{flex:1 1 auto;display:flex;flex-direction:column;gap:var(--gap);min-width:0
 .stout{margin:0;min-height:1.5em;font-size:var(--fs-s);color:var(--sub);text-align:center;word-break:break-word}
 .stout.ok{color:var(--acc2)}
 .stout.bad{color:var(--acc2);opacity:.9}
+/* 高级选项里的分区 / 胶囊选项 */
+.field{margin-top:1rem}
+.flabel{font-size:var(--fs-s);color:var(--sub);margin-bottom:.45rem}
+.chips{display:flex;flex-wrap:wrap;gap:.42rem}
+.chip{
+  background:#0A1424;border:1px solid var(--line);color:var(--sub);
+  border-radius:999px;padding:.42em .78em;font:inherit;font-size:var(--fs-s);
+  cursor:pointer;touch-action:manipulation;transition:background-color .15s,border-color .15s,color .15s;
+  max-width:100%;-webkit-appearance:none;appearance:none;
+}
+.chip.sel{background:#2A1517;border-color:var(--acc);color:#FFD9D6;font-weight:700}
+.chip:active{border-color:var(--acc2)}
+/* 安全说明 */
+.sec{
+  margin-top:1.1rem;padding:.75rem .8rem;
+  border:1px solid var(--line);border-radius:calc(var(--r) - .3rem);background:var(--card2);
+}
+.sec h3{margin:0 0 .45rem;font-size:var(--fs);font-weight:700;color:var(--fg)}
+.sec ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.3rem}
+.sec li{font-size:var(--fs-s);color:var(--sub);line-height:1.45;display:flex;gap:.4em;align-items:flex-start}
+.sec li .ck{color:var(--sub);flex:none;opacity:.8}
+.sec li b{color:var(--fg);font-weight:600;flex:none;white-space:nowrap}
+.sec li span.tx{min-width:0}
+/* 作者 */
+.author{
+  margin-top:.9rem;padding-top:.85rem;border-top:1px solid var(--line);
+  width:100%;display:flex;flex-direction:column;gap:.28rem;align-items:center;text-align:center;
+}
+.author p{margin:0;font-size:var(--fs-s);color:var(--sub);line-height:1.5;max-width:100%;word-break:break-word}
+.author .k{color:var(--fg);opacity:.72;margin-right:.45em}
+.author .gh{display:flex;align-items:center;justify-content:center;gap:.45em;flex-wrap:wrap;max-width:100%}
+.author .url{color:var(--fg);opacity:.92;word-break:break-all}
+.author .free{color:var(--fg)}
+.author .dim{opacity:.82}
+.mini{
+  background:transparent;border:1px solid var(--line);color:var(--sub);border-radius:999px;
+  padding:.22em .7em;font:inherit;font-size:var(--fs-s);cursor:pointer;touch-action:manipulation;flex:none;
+}
+.mini:active{border-color:var(--acc);color:var(--fg)}
 /* 横屏：压缩纵向留白，绝不横向溢出 */
 @media (orientation:landscape) and (max-height:32rem){
   .app{padding-top:calc(env(safe-area-inset-top) + .6rem);padding-bottom:calc(env(safe-area-inset-bottom) + .7rem);gap:.55rem}
@@ -171,7 +210,7 @@ main{flex:1 1 auto;display:flex;flex-direction:column;gap:var(--gap);min-width:0
   <header class="hd">
     <h1>
       <svg class="mk" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.6" y="4.6" width="18.8" height="14.8" rx="3.4" stroke="currentColor" stroke-width="1.7"/><circle cx="8.4" cy="10.2" r="1.8" fill="currentColor"/><path d="M4.7 17.8l4.6-4.6 3.3 3.3 3.1-3.1 4.2 4.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      ue隐图 <span class="tag">手机版 v0.2</span>
+      ue隐图 <span class="tag">手机版 v0.3.1</span>
     </h1>
     <p>纯本地还原混淆图 · 不联网 · 不上传</p>
   </header>
@@ -182,8 +221,8 @@ main{flex:1 1 auto;display:flex;flex-direction:column;gap:var(--gap);min-width:0
     <section class="stage" id="sPick">
       <label class="drop" for="file" id="dropZone">
         <span class="ic"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.6" y="4.6" width="18.8" height="14.8" rx="3.4" stroke="currentColor" stroke-width="1.6"/><circle cx="8.4" cy="10.2" r="1.8" fill="currentColor"/><path d="M4.7 17.8l4.6-4.6 3.3 3.3 3.1-3.1 4.2 4.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        <b>选择混淆图</b>
-        <small id="dropSub">点这里打开相册 / 相机</small>
+        <b>把图片放进来</b>
+        <small id="dropSub">混淆图和原图都能放 —— 会自动判断该混淆还是该还原</small>
         <input id="file" class="sr" type="file" accept="image/*">
       </label>
       <p class="hint" id="shareNote" hidden></p>
@@ -206,6 +245,41 @@ main{flex:1 1 auto;display:flex;flex-direction:column;gap:var(--gap);min-width:0
             关着＝无密码（等于 0100）；打开才用 4 位数字：前两位＝重复次数(1~99)，第 3 位＝右侧补边，第 4 位＝底部补边。
           </p>
           <p class="err" id="pwErr"></p>
+
+          <div class="field">
+            <div class="flabel">输出格式</div>
+            <div class="chips" id="fmtChips">
+              <button type="button" class="chip sel" data-fmt="png">PNG（默认 · 无损）</button>
+              <button type="button" class="chip" data-fmt="jpeg">JPEG（体积小）</button>
+            </div>
+            <p class="hint" id="fmtHint" style="margin-top:.5rem">PNG 无损：存出来的图再还原，像素不会多掉。</p>
+          </div>
+
+          <div class="field">
+            <div class="flabel">混淆方式</div>
+            <div class="chips" id="modeChips">
+              <button type="button" class="chip sel" data-mode="auto">自动（默认）</button>
+              <button type="button" class="chip" data-mode="small">小番茄</button>
+              <button type="button" class="chip" data-mode="block">块</button>
+              <button type="button" class="chip" data-mode="rowpixel">行像素</button>
+              <button type="button" class="chip" data-mode="perpixel">逐像素</button>
+              <button type="button" class="chip" data-mode="picarow">PicEncrypt 行</button>
+              <button type="button" class="chip" data-mode="picarowcol">PicEncrypt 行+列</button>
+            </div>
+            <p class="hint" id="modeHint" style="margin-top:.5rem">
+              自动：混淆图就还原，原图就混淆（默认混淆成小番茄 V3，带色块条，别的番茄系解码器也认）。
+            </p>
+          </div>
+
+          <div class="sec">
+            <h3>它安全吗</h3>
+            <ul>
+              <li><span class="ck">✓</span><b>不联网</b><span class="tx">—— 页面只在本地算，全程 0 个网络请求（可在浏览器开发者工具里核对）</span></li>
+              <li><span class="ck">✓</span><b>不上传</b><span class="tx">—— 图片不出这台手机</span></li>
+              <li><span class="ck">✓</span><b>不读取别的相册</b><span class="tx">—— 只处理你选中的那一张</span></li>
+              <li><span class="ck">✓</span><b>无账号、无统计、无广告</b></li>
+            </ul>
+          </div>
         </div>
       </div>
     </section>
@@ -230,17 +304,7 @@ main{flex:1 1 auto;display:flex;flex-direction:column;gap:var(--gap);min-width:0
       </div>
     </section>
 
-    <!-- ④ 不是混淆图 -->
-    <section class="stage" id="sNotMixed" hidden>
-      <div class="card notice">
-        <div class="big">这张看起来不是混淆图</div>
-        <p class="hint">没读到混淆图的色块条，按密码试解也解不出清晰的画面。</p>
-        <button type="button" class="btn" id="forceBtn">仍然尝试解码</button>
-        <button type="button" class="btn ghost" id="back2">换一张</button>
-      </div>
-    </section>
-
-    <!-- ⑤ 出错 -->
+    <!-- ④ 出错 -->
     <section class="stage" id="sErr" hidden>
       <div class="card notice">
         <div class="big" id="errT">处理失败</div>
@@ -250,13 +314,14 @@ main{flex:1 1 auto;display:flex;flex-direction:column;gap:var(--gap);min-width:0
       </div>
     </section>
 
-    <!-- ⑥ 结果 -->
+    <!-- ⑤ 结果 -->
     <section class="stage" id="sResult" hidden>
       <div class="card stack">
-        <div class="shot"><img id="resImg" alt="还原结果"></div>
-        <a class="btn" id="saveBtn" download="还原.png">保存图片</a>
+        <div class="shot"><img id="resImg" alt="处理结果"></div>
+        <a class="btn" id="saveBtn" download="结果.png">保存图片</a>
         <p class="hint">手机上点了会存到「下载 / 文件」；要进相册，长按上面那张图选「保存图片」。</p>
         <p class="meta" id="resMeta"></p>
+        <button type="button" class="btn ghost" id="forceDecBtn" hidden>其实我想还原这张图</button>
         <button type="button" class="btn ghost" id="againBtn">再来一张</button>
       </div>
     </section>
@@ -266,9 +331,16 @@ main{flex:1 1 auto;display:flex;flex-direction:column;gap:var(--gap);min-width:0
   <footer class="ft">
     <div class="ftrow">
       <button type="button" class="txtbtn" id="stBtn">自检</button>
-      <span class="ver">v0.2</span>
+      <span class="ver">v0.3.1</span>
     </div>
     <p class="stout" id="stOut"></p>
+
+    <div class="author">
+      <p><span class="k">作者</span>B 站 UP 主 游动羽翼</p>
+      <p class="gh"><span class="k">GitHub</span><span class="url">github.com/youyi2608</span><button type="button" class="mini" id="copyGh">复制</button></p>
+      <p class="free">永久免费，欢迎分享给需要的人</p>
+      <p class="dim">认准上面的地址和作者；改过名的、拿去卖钱的副本不是作者发的。</p>
+    </div>
   </footer>
 </div>
 
@@ -282,8 +354,10 @@ main{flex:1 1 auto;display:flex;flex-direction:column;gap:var(--gap);min-width:0
    桌面版用 document.createElement("canvas")，这里换成 OffscreenCanvas。 */
 const document = { createElement: (t) => t === 'canvas' ? new OffscreenCanvas(1, 1) : null };
 if (typeof OffscreenCanvas !== 'undefined' && !OffscreenCanvas.prototype.toBlob) {
-  OffscreenCanvas.prototype.toBlob = function (cb, type) {
-    this.convertToBlob({ type: type || 'image/png' }).then(function (b) { cb(b); });
+  OffscreenCanvas.prototype.toBlob = function (cb, type, q) {
+    var opt = { type: type || 'image/png' };
+    if (typeof q === 'number') opt.quality = q;
+    this.convertToBlob(opt).then(function (b) { cb(b); });
   };
 }
 
@@ -663,6 +737,260 @@ function decodeV2(img, step, v, h) {
 }
 
 /* =========================================================================
+   六点五、其余 5 种混淆（块 / 行像素 / 逐像素 / PicEncrypt 行 / PicEncrypt 行+列）
+   1:1 移植自电脑版 Scramblers（原本照抄 PicEncrypt 的 Java 实现），
+   索引重排都是确定性的，跟字体/渲染无关，所以能和 C# 逐字节对上。
+   ========================================================================= */
+const STR_KEY = '0.666';   // 块 / 行像素 / 逐像素 的字符串 key（桌面版默认）
+const DBL_KEY = 0.666;     // PicEncrypt 行 / 行+列 的 double key（桌面版默认）
+
+/* --- MD5（Shuffle 要用；浏览器没有同步的 md5，只好自带一份） --- */
+const MD5_K = (function () {
+    const k = new Int32Array(64);
+    for (let i = 0; i < 64; i++) k[i] = (Math.abs(Math.sin(i + 1)) * 4294967296) | 0;
+    return k;
+})();
+const MD5_S = [7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
+    5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,
+    4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
+    6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21];
+
+function utf8Bytes(s) {
+    const out = [];
+    for (let i = 0; i < s.length; i++) {
+        let c = s.charCodeAt(i);
+        if (c < 0x80) out.push(c);
+        else if (c < 0x800) out.push(0xC0 | (c >> 6), 0x80 | (c & 63));
+        else if (c >= 0xD800 && c <= 0xDBFF && i + 1 < s.length) {
+            const c2 = s.charCodeAt(i + 1);
+            if (c2 >= 0xDC00 && c2 <= 0xDFFF) {
+                const cp = 0x10000 + ((c - 0xD800) << 10) + (c2 - 0xDC00);
+                out.push(0xF0 | (cp >> 18), 0x80 | ((cp >> 12) & 63), 0x80 | ((cp >> 6) & 63), 0x80 | (cp & 63));
+                i++;
+            } else out.push(0xE0 | (c >> 12), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+        } else out.push(0xE0 | (c >> 12), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+    }
+    return out;
+}
+
+function md5hex(str) {
+    const msg = utf8Bytes(str);
+    const ml = msg.length;
+    const total = (((ml + 8) >>> 6) + 1) << 6;
+    const buf = new Uint8Array(total);
+    for (let i = 0; i < ml; i++) buf[i] = msg[i];
+    buf[ml] = 0x80;
+    const bits = ml * 8;
+    const lo = bits >>> 0, hi = Math.floor(bits / 4294967296) >>> 0;
+    buf[total - 8] = lo & 255; buf[total - 7] = (lo >>> 8) & 255;
+    buf[total - 6] = (lo >>> 16) & 255; buf[total - 5] = (lo >>> 24) & 255;
+    buf[total - 4] = hi & 255; buf[total - 3] = (hi >>> 8) & 255;
+    buf[total - 2] = (hi >>> 16) & 255; buf[total - 1] = (hi >>> 24) & 255;
+
+    let a0 = 0x67452301, b0 = 0xEFCDAB89 | 0, c0 = 0x98BADCFE | 0, d0 = 0x10325476;
+    const M = new Int32Array(16);
+    for (let off = 0; off < total; off += 64) {
+        for (let i = 0; i < 16; i++) {
+            const p = off + i * 4;
+            M[i] = buf[p] | (buf[p + 1] << 8) | (buf[p + 2] << 16) | (buf[p + 3] << 24);
+        }
+        let A = a0, B = b0, C = c0, D = d0;
+        for (let i = 0; i < 64; i++) {
+            let F, g;
+            if (i < 16) { F = (B & C) | (~B & D); g = i; }
+            else if (i < 32) { F = (D & B) | (~D & C); g = (5 * i + 1) & 15; }
+            else if (i < 48) { F = B ^ C ^ D; g = (3 * i + 5) & 15; }
+            else { F = C ^ (B | ~D); g = (7 * i) & 15; }
+            F = (F + A + MD5_K[i] + M[g]) | 0;
+            A = D; D = C; C = B;
+            B = (B + ((F << MD5_S[i]) | (F >>> (32 - MD5_S[i])))) | 0;
+        }
+        a0 = (a0 + A) | 0; b0 = (b0 + B) | 0; c0 = (c0 + C) | 0; d0 = (d0 + D) | 0;
+    }
+    const words = [a0, b0, c0, d0];
+    let hex = '';
+    for (let i = 0; i < 4; i++) {
+        const w = words[i];
+        for (let k = 0; k < 4; k++) {
+            const b = (w >>> (k * 8)) & 255;
+            hex += (b < 16 ? '0' : '') + b.toString(16);
+        }
+    }
+    return hex;
+}
+
+/* BasePixelScramble.shuffle：MD5(key+i) 前 7 位十六进制 % (i+1) */
+function shuffleOrder(key, len) {
+    const arr = new Int32Array(len);
+    for (let i = 0; i < len; i++) arr[i] = i;
+    for (let i = len - 1; i > 0; i--) {
+        const hex = md5hex((key || '') + i);
+        const rand = parseInt(hex.substring(0, 7), 16) % (i + 1);
+        const tmp = arr[rand];
+        arr[rand] = arr[i];
+        arr[i] = tmp;
+    }
+    return arr;
+}
+
+/* BasePicEncryptScramble：logistic 混沌 + 排序取位置 */
+function logisticPositions(x1, n) {
+    const v = new Float64Array(n);
+    const idx = new Array(n);
+    let x = x1;
+    v[0] = x; idx[0] = 0;
+    for (let i = 1; i < n; i++) {
+        x = 3.9999999 * x * (1 - x);
+        v[i] = x;
+        idx[i] = i;
+    }
+    idx.sort(function (a, b) {
+        if (v[a] < v[b]) return -1;
+        if (v[a] > v[b]) return 1;
+        return a - b;
+    });
+    return idx;
+}
+
+function logisticLast(x1, n) {
+    let x = x1;
+    for (let i = 1; i < n; i++) x = 3.9999999 * x * (1 - x);
+    return x;
+}
+
+function copyPx(dst, di, src, si) {
+    dst[di] = src[si]; dst[di + 1] = src[si + 1]; dst[di + 2] = src[si + 2]; dst[di + 3] = src[si + 3];
+}
+
+/* ===== 块混淆（32×32，补边到 32 的倍数） ===== */
+function blockScramble(src, w, h, key, encrypt, xb, yb) {
+    const nw = (w % xb > 0) ? w + xb - w % xb : w;
+    const nh = (h % yb > 0) ? h + yb - h % yb : h;
+    const xa = shuffleOrder(key, xb), ya = shuffleOrder(key, yb);
+    const bw = Math.floor(nw / xb), bh = Math.floor(nh / yb);
+    const dst = new Uint8ClampedArray(nw * nh * 4);
+    for (let j = 0; j < nh; j++) {
+        for (let i = 0; i < nw; i++) {
+            let n = j;
+            let m = (xa[Math.floor(n / bh) % xb] * bw + i) % nw;
+            m = xa[Math.floor(m / bw)] * bw + m % bw;
+            n = (ya[Math.floor(m / bw) % yb] * bh + n) % nh;
+            n = ya[Math.floor(n / bh)] * bh + n % bh;
+            if (encrypt) copyPx(dst, (i + j * nw) * 4, src, (m % w + (n % h) * w) * 4);
+            else copyPx(dst, (m + n * nw) * 4, src, (i % w + (j % h) * w) * 4);
+        }
+    }
+    return { data: dst, w: nw, h: nh };
+}
+
+/* ===== 行像素混淆 ===== */
+function rowPixelScramble(src, w, h, key, encrypt) {
+    const xa = shuffleOrder(key, w);
+    const dst = new Uint8ClampedArray(w * h * 4);
+    for (let i = 0; i < w; i++) {
+        for (let j = 0; j < h; j++) {
+            const m = xa[(xa[j % w] + i) % w];
+            if (encrypt) copyPx(dst, (i + j * w) * 4, src, (m + j * w) * 4);
+            else copyPx(dst, (m + j * w) * 4, src, (i + j * w) * 4);
+        }
+    }
+    return { data: dst, w: w, h: h };
+}
+
+/* ===== 逐像素混淆 ===== */
+function perPixelScramble(src, w, h, key, encrypt) {
+    const xa = shuffleOrder(key, w);
+    const ya = shuffleOrder(key, h);
+    const dst = new Uint8ClampedArray(w * h * 4);
+    for (let i = 0; i < w; i++) {
+        for (let j = 0; j < h; j++) {
+            const m = xa[(xa[j % w] + i) % w];
+            const n = ya[(ya[m % h] + j) % h];
+            if (encrypt) copyPx(dst, (i + j * w) * 4, src, (m + n * w) * 4);
+            else copyPx(dst, (m + n * w) * 4, src, (i + j * w) * 4);
+        }
+    }
+    return { data: dst, w: w, h: h };
+}
+
+/* ===== PicEncrypt 行模式 ===== */
+function picaRowScramble(src, w, h, key, encrypt) {
+    const pos = logisticPositions(key, w);
+    const dst = new Uint8ClampedArray(w * h * 4);
+    for (let i = 0; i < w; i++) {
+        const m = pos[i];
+        for (let j = 0; j < h; j++) {
+            if (encrypt) copyPx(dst, (i + j * w) * 4, src, (m + j * w) * 4);
+            else copyPx(dst, (m + j * w) * 4, src, (i + j * w) * 4);
+        }
+    }
+    return { data: dst, w: w, h: h };
+}
+
+/* ===== PicEncrypt 行+列模式 ===== */
+function picaRowColScramble(src, w, h, key, encrypt) {
+    const dst = new Uint8ClampedArray(w * h * 4);
+    const t1 = new Uint8ClampedArray(w * h * 4);
+    if (encrypt) {
+        let x = key;
+        for (let j = 0; j < h; j++) {
+            const pos = logisticPositions(x, w);
+            x = logisticLast(x, w);
+            const off = j * w;
+            for (let i = 0; i < w; i++) copyPx(t1, (i + off) * 4, src, (pos[i] + off) * 4);
+        }
+        x = key;
+        for (let i = 0; i < w; i++) {
+            const pos = logisticPositions(x, h);
+            x = logisticLast(x, h);
+            for (let j = 0; j < h; j++) copyPx(dst, (i + j * w) * 4, t1, (i + pos[j] * w) * 4);
+        }
+    } else {
+        let x = key;
+        for (let i = 0; i < w; i++) {
+            const pos = logisticPositions(x, h);
+            x = logisticLast(x, h);
+            for (let j = 0; j < h; j++) copyPx(t1, (i + pos[j] * w) * 4, src, (i + j * w) * 4);
+        }
+        x = key;
+        for (let j = 0; j < h; j++) {
+            const pos = logisticPositions(x, w);
+            x = logisticLast(x, w);
+            const off = j * w;
+            for (let i = 0; i < w; i++) copyPx(dst, (pos[i] + off) * 4, t1, (i + off) * 4);
+        }
+    }
+    return { data: dst, w: w, h: h };
+}
+
+const MODE_INFO = {
+    auto: { name: '自动' },
+    small: { name: '小番茄' },
+    block: { name: '块' },
+    rowpixel: { name: '行像素' },
+    perpixel: { name: '逐像素' },
+    picarow: { name: 'PicEncrypt 行' },
+    picarowcol: { name: 'PicEncrypt 行+列' }
+};
+
+function scrambleWith(mode, data, w, h, encrypt) {
+    if (mode === 'block') return blockScramble(data, w, h, STR_KEY, encrypt, 32, 32);
+    if (mode === 'rowpixel') return rowPixelScramble(data, w, h, STR_KEY, encrypt);
+    if (mode === 'perpixel') return perPixelScramble(data, w, h, STR_KEY, encrypt);
+    if (mode === 'picarow') return picaRowScramble(data, w, h, DBL_KEY, encrypt);
+    if (mode === 'picarowcol') return picaRowColScramble(data, w, h, DBL_KEY, encrypt);
+    return null;
+}
+
+function dataToCanvas(d) {
+    const c = document.createElement('canvas');
+    c.width = d.w; c.height = d.h;
+    const ctx = c.getContext('2d');
+    ctx.putImageData(new ImageData(d.data, d.w, d.h), 0, 0);
+    return c;
+}
+
+/* =========================================================================
    七、自动判断用的平滑度打分（原样复制自官网第 7 节 + 第 9 节）
    ========================================================================= */
 /* 说明：连续 step 次置换 == 沿曲线一次位移 step*offset 位（同一个置换的幂），
@@ -747,8 +1075,8 @@ const SCORE_GATE = 0.75;   // 解码后平滑度要掉到原来的 3/4 以下，
    ========================================================================= */
 function post(m) { self.postMessage(m); }
 function msgOf(e) { return (e && e.message) ? e.message : String(e); }
-function canvasToBlob(canvas) {
-    return new Promise(r => canvas.toBlob(b => r(b), "image/png"));
+function canvasToBlob(canvas, type, q) {
+    return new Promise(r => canvas.toBlob(b => r(b), type || 'image/png', q));
 }
 
 /* V2 没有色块条，靠平滑度粗判一次（每个候选只跑 1 遍位移，很便宜） */
@@ -783,7 +1111,7 @@ async function onMsg(m) {
 }
 
 async function openImage(m) {
-    S = { blob: m.blob, pw: (m.pw || ''), force: !!m.force };
+    S = { blob: m.blob, pw: (m.pw || ''), force: !!m.force, mode: (m.mode || 'auto'), fmt: (m.fmt || 'png') };
     post({ t: 'stage', s: '读取图片', p: 8 });
 
     let bmp;
@@ -804,45 +1132,143 @@ async function openImage(m) {
     return work();
 }
 
+function modeName(m) { return (MODE_INFO[m] && MODE_INFO[m].name) || m; }
+
+/* 输入图 → 输出 blob（PNG 或 JPEG 0.92） */
+async function blobOf(canvas, fmt) {
+    if (fmt === 'jpeg') return canvasToBlob(canvas, 'image/jpeg', 0.92);
+    return canvasToBlob(canvas, 'image/png');
+}
+
+/* 用选中的别的方式试解一次，返回 {canvas, ratio} */
+function tryModeDecode(bmp, mode) {
+    const w = bmp.width, h = bmp.height;
+    const src = grabPixels(bmp, w, h);
+    const r = scrambleWith(mode, src, w, h, false);
+    if (!r) return null;
+    const cvs = dataToCanvas(r);
+    const bs = Math.max(baseScore(bmp, null), 0.01);
+    return { canvas: cvs, ratio: scoreCanvas(cvs) / bs };
+}
+
+/* 「自动」模式下：小番茄没解出来，就把另外 5 种都嗅一遍（每种只跑一次，key 用默认 0.666） */
+function sniffModes(bmp) {
+    const w = bmp.width, h = bmp.height;
+    const src = grabPixels(bmp, w, h);
+    const bs = Math.max(baseScore(bmp, null), 0.01);
+    const order = ['picarow', 'picarowcol', 'rowpixel', 'perpixel', 'block'];
+    let best = null;
+    for (let i = 0; i < order.length; i++) {
+        const m = order[i];
+        const r = scrambleWith(m, src, w, h, false);
+        if (!r) continue;
+        const cvs = dataToCanvas(r);
+        const ratio = scoreCanvas(cvs) / bs;
+        if (!best || ratio < best.ratio) best = { ratio: ratio, canvas: cvs, name: MODE_INFO[m].name, mode: m };
+    }
+    return best;
+}
+
 async function work() {
-    const bmp = S.bmp, pw = S.pw;
+    const bmp = S.bmp, pw = S.pw, mode = S.mode, fmt = S.fmt;
     const pass = getPassWD(pw);
-    let step = pass[0], v = pass[1], h = pass[2];
+    const step = pass[0], v = pass[1], h = pass[2];
 
     post({ t: 'stage', s: '判断是不是混淆图', p: 24 });
     const bar = readBarcode(bmp);
 
-    if (!bar && !S.force) {
+    let canvas = null, blob = null, kind = '', how = '', note = '', ratio = null, ow = 0, oh = 0;
+
+    /* ---------- 1. 先按混淆图去解（自动优先） ---------- */
+    if (S.force) {
+        post({ t: 'stage', s: '强行解码', p: 48 });
+        const r = bar ? decodeV3(bmp, bar, step, v, h) : decodeV2(bmp, step, v, h);
+        canvas = r.canvas; kind = 'dec'; how = bar ? '小番茄 V3' : '小番茄 V2';
+        if (bar && r.resized) note = '原图尺寸和色块条记录的不一致（图被缩放过），清晰度可能受影响';
+    } else if (bar) {
+        post({ t: 'stage', s: '解码中（这一步最慢）', p: 52 });
+        const r = decodeV3(bmp, bar, step, v, h);
+        canvas = r.canvas; kind = 'dec'; how = '小番茄 V3';
+        if (r.resized) note = '原图尺寸和色块条记录的不一致（图被缩放过），清晰度可能受影响';
+    } else {
         post({ t: 'stage', s: '按密码试解一次', p: 36 });
         const p = probeV2(bmp, pw);
-        if (!p || p.ratio >= SCORE_GATE) { post({ t: 'notmixed' }); return; }
-        step = p.step;
+        if (p && p.ratio < SCORE_GATE) {
+            post({ t: 'stage', s: '解码中（这一步最慢）', p: 52 });
+            canvas = decodeV2(bmp, p.step, v, h).canvas;
+            kind = 'dec'; how = '小番茄 V2';
+        } else if (mode === 'auto') {
+            /* 自动：小番茄没解出来，再把另外 5 种都嗅一遍 */
+            post({ t: 'stage', s: '再嗅一遍别的混淆方式', p: 44 });
+            const best = sniffModes(bmp);
+            if (best && best.ratio < SCORE_GATE) {
+                canvas = best.canvas; kind = 'dec'; how = best.name;
+            }
+        } else if (mode !== 'small') {
+            /* 2. 自动没解出来 → 再按选中的那种方式试一次 */
+            post({ t: 'stage', s: '按「' + modeName(mode) + '」试解', p: 44 });
+            const t1 = tryModeDecode(bmp, mode);
+            if (t1 && t1.ratio < SCORE_GATE) {
+                canvas = t1.canvas; kind = 'dec'; how = modeName(mode);
+            }
+        }
     }
 
-    post({ t: 'stage', s: '解码中（这一步最慢）', p: 52 });
-    const r = bar ? decodeV3(bmp, bar, step, v, h) : decodeV2(bmp, step, v, h);
+    /* ---------- 3. 还是解不出来：当原图，按选中的方式混淆 ---------- */
+    if (!canvas) {
+        kind = 'enc';
+        const useMode = (mode === 'auto') ? 'small' : mode;
+        how = modeName(useMode);
+        post({ t: 'stage', s: '混淆中（' + how + '）', p: 55 });
 
-    post({ t: 'stage', s: '生成图片', p: 84 });
-    const blob = await canvasToBlob(r.canvas);
-    if (!blob) throw new Error('生成 PNG 失败（内存可能不够）');
+        if (useMode === 'small') {
+            const enc = await encodeV3(bmp, step, v, h);      // 固定 PNG
+            if (!enc) throw new Error('混淆这一步没出图');
+            ow = bmp.width + v; oh = bmp.height + 64 + h;
+            if (fmt === 'jpeg') {
+                const b2 = await createImageBitmap(enc, { imageOrientation: 'none' });
+                const c2 = document.createElement('canvas');
+                c2.width = ow; c2.height = oh;
+                c2.getContext('2d').drawImage(b2, 0, 0);
+                blob = await canvasToBlob(c2, 'image/jpeg', 0.92);
+            } else {
+                blob = enc;
+            }
+        } else {
+            const src = grabPixels(bmp, bmp.width, bmp.height);
+            const r = scrambleWith(useMode, src, bmp.width, bmp.height, true);
+            if (!r) throw new Error('这个混淆方式不支持');
+            canvas = dataToCanvas(r);
+            ow = r.w; oh = r.h;
+            blob = await blobOf(canvas, fmt);
+        }
+        note = '这张不是混淆图，已按「' + how + '」混淆';
+        if (fmt === 'jpeg') note += '；转成 JPEG 之后就没法无损还原了';
+    } else {
+        post({ t: 'stage', s: '生成图片', p: 84 });
+        ow = canvas.width; oh = canvas.height;
+        blob = await blobOf(canvas, fmt);
+        if (fmt === 'jpeg') note = (note ? note + '；' : '') + '存成了 JPEG，会有压缩痕迹';
+        try {
+            const bs = Math.max(baseScore(bmp, bar), 0.01);
+            ratio = scoreCanvas(canvas) / bs;
+            if (ratio >= SCORE_GATE) note = (note ? note + '；' : '') + '解出来不太像原图，确认一下高级选项里的密码';
+        } catch (e) { /* 只是提示，失败就不提示 */ }
+    }
 
-    const notes = [];
-    if (bar && r.resized) notes.push('原图尺寸和色块条记录的不一致（图被缩放过），清晰度可能受影响');
-    let ratio = null;
-    try {
-        const bs = Math.max(baseScore(bmp, bar), 0.01);
-        ratio = scoreCanvas(r.canvas) / bs;
-        if (ratio >= SCORE_GATE) notes.push('解出来不太像原图，确认一下高级选项里的密码');
-    } catch (e) { /* 只是提示，失败就不提示 */ }
+    if (!blob) throw new Error('生成图片失败（内存可能不够）');
 
     post({
         t: 'done',
         blob: blob,
-        w: r.canvas.width,
-        h: r.canvas.height,
+        w: ow,
+        h: oh,
+        kind: kind,
+        how: how,
+        ext: (fmt === 'jpeg') ? 'jpg' : 'png',
         step: step,
         ratio: ratio,
-        note: notes.join('；')
+        note: note
     });
 }
 
@@ -868,7 +1294,7 @@ async function selfTest() {
         x.fillStyle = '#FF5C52'; x.fillRect(W * 0.6, H * 0.59, W * 0.28, H * 0.31);
         x.font = 'bold ' + Math.max(9, Math.round(H / 8)) + 'px sans-serif';
         x.fillStyle = '#EAF1FA'; x.textAlign = 'left'; x.textBaseline = 'alphabetic';
-        x.fillText('自检 v0.2', W * 0.07, H * 0.57);
+        x.fillText('自检 v0.3.1', W * 0.07, H * 0.57);
         const src = x.getImageData(0, 0, W, H).data;
 
         const bmp = await createImageBitmap(c);
@@ -902,12 +1328,19 @@ async function selfTest() {
   var $ = function (id) { return document.getElementById(id); };
   var WATCHDOG_MS = 180000;
 
-  var STAGES = ['sPick', 'sBusy', 'sBig', 'sNotMixed', 'sErr', 'sResult'];
+  var STAGES = ['sPick', 'sBusy', 'sBig', 'sErr', 'sResult'];
   var cur = {
     file: null, baseName: 'image', stage: 'pick', resultBlob: null, url: null,
-    t0: 0, timer: 0, dims: null, force: false
+    t0: 0, timer: 0, dims: null, force: false, kind: '', how: '', ext: 'png'
   };
   var wk = null, wd = 0;
+
+  function chipVal(id, attr) {
+    var el = $(id) ? $(id).querySelector('.chip.sel') : null;
+    return el ? el.getAttribute(attr) : '';
+  }
+  function selMode() { return chipVal('modeChips', 'data-mode') || 'auto'; }
+  function selFmt() { return chipVal('fmtChips', 'data-fmt') || 'png'; }
 
   /* ---------- 工具 ---------- */
   function setStage(id) {
@@ -981,7 +1414,7 @@ async function selfTest() {
     $('busyBar').style.width = '6%';
     setStage('sBusy');
     startTimer();
-    post({ t: 'open', blob: cur.file, pw: pwText(), force: cur.force });
+    post({ t: 'open', blob: cur.file, pw: pwText(), force: cur.force, mode: selMode(), fmt: selFmt() });
   }
 
   function onWorkerMsg(ev) {
@@ -1006,7 +1439,6 @@ async function selfTest() {
       }
       return;
     }
-    if (m.t === 'notmixed') { clearInterval(cur.timer); setStage('sNotMixed'); return; }
     if (m.t === 'done') { finish(m); return; }
     if (m.t === 'err') { showErr(m.step || '处理失败', m.msg); return; }
     if (m.t === 'selftest') { selfTestDone(m); return; }
@@ -1020,17 +1452,24 @@ async function selfTest() {
     cur.resultBlob = m.blob;
     cur.ratio = m.ratio;
     cur.step = m.step;
+    cur.kind = m.kind || 'dec';
+    cur.how = m.how || '';
+    cur.ext = m.ext || 'png';
     cur.url = URL.createObjectURL(m.blob);
 
+    var isEnc = cur.kind === 'enc';
     $('busyBar').style.width = '100%';
     $('resImg').src = cur.url;
     var a = $('saveBtn');
     a.href = cur.url;
-    a.download = cur.baseName + '_还原.png';
+    a.download = cur.baseName + (isEnc ? '_混淆.' : '_还原.') + cur.ext;
 
-    var meta = m.w + ' × ' + m.h + ' · 用时 ' + (s < 10 ? s.toFixed(2) : s.toFixed(1)) + ' 秒';
+    var meta = (isEnc ? '已混淆' : '已还原');
+    if (cur.how) meta += ' · ' + cur.how;
+    meta += ' · ' + m.w + ' × ' + m.h + ' · 用时 ' + (s < 10 ? s.toFixed(2) : s.toFixed(1)) + ' 秒';
     if (m.note) meta += ' · ' + m.note;
     $('resMeta').textContent = meta;
+    $('forceDecBtn').hidden = !isEnc;
     setStage('sResult');
   }
 
@@ -1092,9 +1531,69 @@ async function selfTest() {
   });
   $('bigBack').addEventListener('click', reset);
 
-  $('forceBtn').addEventListener('click', function () { begin(true); });
-  $('back2').addEventListener('click', reset);
+  $('forceDecBtn').addEventListener('click', function () { begin(true); });
   $('againBtn').addEventListener('click', reset);
+
+  /* ---------- 高级选项里的胶囊选项 ---------- */
+  function pickChip(box, btn) {
+    var all = box.querySelectorAll('.chip');
+    for (var i = 0; i < all.length; i++) all[i].classList.toggle('sel', all[i] === btn);
+  }
+  $('fmtChips').addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('.chip') : null;
+    if (!b) return;
+    pickChip(this, b);
+    $('fmtHint').textContent = b.getAttribute('data-fmt') === 'jpeg'
+      ? 'JPEG 体积小，但会有压缩痕迹：转成 JPEG 之后再还原一定会有损失（番茄系本来就怕 JPEG），质量固定 0.92。'
+      : 'PNG 无损：存出来的图再还原，像素不会多掉。';
+  });
+  var MODE_TIPS = {
+    auto: '自动：混淆图就还原，原图就混淆（默认混淆成小番茄 V3，带色块条，别的番茄系解码器也认）。',
+    small: '小番茄：电脑版那套 V3，顶部提示条 + 色块条，别的番茄系解码器也认。',
+    block: '块：按 32×32 打乱，尺寸会补边到 32 的倍数（和电脑版同一套索引）。',
+    rowpixel: '行像素：整行像素按 key 重排（和电脑版同一套索引）。',
+    perpixel: '逐像素：每个像素都重排，最碎但可逆（和电脑版同一套索引）。',
+    picarow: 'PicEncrypt 行：logistic 混沌按行重排，key 0.666（和电脑版 v2.3.1 同一套索引）。',
+    picarowcol: 'PicEncrypt 行+列：行、列各重排一次，key 0.666（和电脑版 v2.3.1 同一套索引）。'
+  };
+  $('modeChips').addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('.chip') : null;
+    if (!b) return;
+    pickChip(this, b);
+    var m = b.getAttribute('data-mode');
+    $('modeHint').textContent = MODE_TIPS[m] || '';
+  });
+
+  /* ---------- 复制 GitHub 地址 ---------- */
+  $('copyGh').addEventListener('click', function () {
+    var url = 'https://github.com/youyi2608';
+    var btn = this;
+    var done = function (ok) {
+      btn.textContent = ok ? '已复制' : '复制失败';
+      setTimeout(function () { btn.textContent = '复制'; }, 1600);
+    };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function () { done(true); }, function () { done(fallbackCopy(url)); });
+        return;
+      }
+    } catch (e) { }
+    done(fallbackCopy(url));
+  });
+  function fallbackCopy(txt) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = txt;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.top = '-1000px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok;
+    } catch (e) { return false; }
+  }
 
   $('errRetry').addEventListener('click', function () {
     killWorker();
@@ -1165,11 +1664,13 @@ async function selfTest() {
 
   /* ---------- 给自动化测试留的出口 ---------- */
   window.__UE = {
-    v: 'v0.2',
+    v: 'v0.3.1',
     stage: function () { return cur.stage; },
     dims: function () { return cur.dims; },
     ratio: function () { return cur.ratio; },
     step: function () { return cur.step; },
+    kind: function () { return cur.kind; },
+    how: function () { return cur.how; },
     selftestSize: function () { return cur.stSize; },
     selftestText: function () { return $('stOut').textContent; },
     resultMeta: function () { return $('resMeta').textContent; },
@@ -1187,7 +1688,7 @@ async function selfTest() {
 })();
 </script>
 <script>
-/* --- Android APK 分享接入（仅 APK 内使用，网页版没有这段） --- */
+/* --- Android APK 分享接入（仅 APK 内使用） --- */
 (function () {
   function b64ToBlob(dataUrl) {
     var i = dataUrl.indexOf(',');

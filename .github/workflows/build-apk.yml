@@ -31,11 +31,15 @@ jobs:
             -A android/app/src/main/assets \
             --manifest android/app/src/main/AndroidManifest.xml \
             --min-sdk-version 24 --target-sdk-version 34 build/res.zip
-          cd build && mkdir -p unz && cd unz && unzip -o -q ../base.apk && cp ../dex/classes.dex classes.dex && zip -q -r ../unsigned.apk . && cd ..
-          keytool -genkeypair -keystore ks.jks -storepass ueyintu -keypass ueyintu -alias ue -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=ue-yintu" >/dev/null 2>&1
-          "$BT/apksigner" sign --ks ks.jks --ks-pass pass:ueyintu --key-pass pass:ueyintu --out ue-yintu.apk unsigned.apk
-          "$BT/apksigner" verify ue-yintu.apk
-          ls -l ue-yintu.apk
+          python3 tools/mkzip.py build/base.apk build/dex/classes.dex build/withdex.apk
+          "$BT/zipalign" -f -p 4 build/withdex.apk build/aligned.apk
+          keytool -genkeypair -keystore build/ks.jks -storepass ueyintu -keypass ueyintu -alias ue -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=ue-yintu" >/dev/null 2>&1
+          "$BT/apksigner" sign --ks build/ks.jks --ks-pass pass:ueyintu --key-pass pass:ueyintu \
+            --min-sdk-version 24 --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true \
+            --out build/ue-yintu.apk build/aligned.apk
+          "$BT/apksigner" verify --print-certs -v build/ue-yintu.apk | head -25
+          python3 -c "import zipfile;z=zipfile.ZipFile('build/ue-yintu.apk');print('arsc_method',[(i.compress_type) for i in z.infolist() if i.filename=='resources.arsc'])"
+          ls -l build/ue-yintu.apk
       - uses: actions/upload-artifact@v4
         with:
           name: ue-yintu-apk

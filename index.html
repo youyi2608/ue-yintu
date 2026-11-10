@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="ue隐图">
 <meta name="format-detection" content="telephone=no">
-<title>ue隐图 · 手机版 v0.1</title>
+<title>ue隐图 · 手机版 v0.2</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="图标192.png">
 <link rel="apple-touch-icon" href="图标192.png">
@@ -171,7 +171,7 @@ main{flex:1 1 auto;display:flex;flex-direction:column;gap:var(--gap);min-width:0
   <header class="hd">
     <h1>
       <svg class="mk" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.6" y="4.6" width="18.8" height="14.8" rx="3.4" stroke="currentColor" stroke-width="1.7"/><circle cx="8.4" cy="10.2" r="1.8" fill="currentColor"/><path d="M4.7 17.8l4.6-4.6 3.3 3.3 3.1-3.1 4.2 4.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      ue隐图 <span class="tag">手机版 v0.1</span>
+      ue隐图 <span class="tag">手机版 v0.2</span>
     </h1>
     <p>纯本地还原混淆图 · 不联网 · 不上传</p>
   </header>
@@ -186,6 +186,7 @@ main{flex:1 1 auto;display:flex;flex-direction:column;gap:var(--gap);min-width:0
         <small id="dropSub">点这里打开相册 / 相机</small>
         <input id="file" class="sr" type="file" accept="image/*">
       </label>
+      <p class="hint" id="shareNote" hidden></p>
 
       <div class="card">
         <button type="button" class="advbtn" id="advBtn" aria-expanded="false" aria-controls="advBody">
@@ -265,7 +266,7 @@ main{flex:1 1 auto;display:flex;flex-direction:column;gap:var(--gap);min-width:0
   <footer class="ft">
     <div class="ftrow">
       <button type="button" class="txtbtn" id="stBtn">自检</button>
-      <span class="ver">v0.1</span>
+      <span class="ver">v0.2</span>
     </div>
     <p class="stout" id="stOut"></p>
   </footer>
@@ -827,9 +828,11 @@ async function work() {
 
     const notes = [];
     if (bar && r.resized) notes.push('原图尺寸和色块条记录的不一致（图被缩放过），清晰度可能受影响');
+    let ratio = null;
     try {
         const bs = Math.max(baseScore(bmp, bar), 0.01);
-        if (scoreCanvas(r.canvas) / bs >= SCORE_GATE) notes.push('解出来不太像原图，确认一下高级选项里的密码');
+        ratio = scoreCanvas(r.canvas) / bs;
+        if (ratio >= SCORE_GATE) notes.push('解出来不太像原图，确认一下高级选项里的密码');
     } catch (e) { /* 只是提示，失败就不提示 */ }
 
     post({
@@ -837,16 +840,21 @@ async function work() {
         blob: blob,
         w: r.canvas.width,
         h: r.canvas.height,
+        step: step,
+        ratio: ratio,
         note: notes.join('；')
     });
 }
 
-/* 自检：本地造图 → V3 混淆 → 解码 → 逐像素比对 */
+/* 自检：本地造图 → V3 混淆 → 解码 → 逐像素比对
+   尺寸每次随机挑一个（以前固定 400×300 会漏掉别的几何），
+   密码固定走默认的 step=1（无密码那条路），这条路上编码→解码是严格无损的。 */
+const SELF_SIZES = [[400, 300], [240, 180], [200, 150], [100, 80], [333, 217], [320, 240], [160, 120], [480, 360]];
 async function selfTest() {
     const t0 = performance.now();
-    /* 尺寸固定 400×300：和电脑版验证用的是同一套几何，编码→解码在这个尺寸上是严格无损的 */
-    const W = 400, H = 300;
-    const done = (ok, why) => post({ t: 'selftest', ok: ok, ms: Math.round(performance.now() - t0), why: why || '' });
+    const pick = SELF_SIZES[Math.floor(Math.random() * SELF_SIZES.length)];
+    const W = pick[0], H = pick[1];
+    const done = (ok, why) => post({ t: 'selftest', ok: ok, ms: Math.round(performance.now() - t0), why: why || '', w: W, h: H });
     try {
         const c = document.createElement('canvas');
         c.width = W; c.height = H;
@@ -855,22 +863,22 @@ async function selfTest() {
         g.addColorStop(0, '#FF3B30'); g.addColorStop(0.55, '#12233E'); g.addColorStop(1, '#EAF1FA');
         x.fillStyle = g; x.fillRect(0, 0, W, H);
         x.fillStyle = '#8FA6C4';
-        for (let i = 0; i < 5; i++) x.fillRect(28 + i * 66, 36 + (i % 3) * 44, 50, 34);
-        x.fillStyle = '#0B1526'; x.fillRect(46, 196, 160, 70);
-        x.fillStyle = '#FF5C52'; x.fillRect(240, 176, 112, 92);
-        x.font = 'bold 36px sans-serif';
+        for (let i = 0; i < 5; i++) x.fillRect(W * 0.07 + i * W * 0.165, H * 0.12 + (i % 3) * H * 0.15, W * 0.125, H * 0.115);
+        x.fillStyle = '#0B1526'; x.fillRect(W * 0.115, H * 0.65, W * 0.4, H * 0.235);
+        x.fillStyle = '#FF5C52'; x.fillRect(W * 0.6, H * 0.59, W * 0.28, H * 0.31);
+        x.font = 'bold ' + Math.max(9, Math.round(H / 8)) + 'px sans-serif';
         x.fillStyle = '#EAF1FA'; x.textAlign = 'left'; x.textBaseline = 'alphabetic';
-        x.fillText('自检 v0.1', 28, 172);
+        x.fillText('自检 v0.2', W * 0.07, H * 0.57);
         const src = x.getImageData(0, 0, W, H).data;
 
         const bmp = await createImageBitmap(c);
-        const enc = await encodeV3(bmp, 3, 0, 0);
+        const enc = await encodeV3(bmp, 1, 0, 0);
         if (!enc) return done(false, '混淆这一步没出图');
         const bmp2 = await createImageBitmap(enc, { imageOrientation: 'none' });
         const bar = readBarcode(bmp2);
         if (!bar || bar.w !== W || bar.h !== H) return done(false, '色块条读不出来（' + (bar ? bar.w + '×' + bar.h : '空') + '）');
 
-        const r = decodeV3(bmp2, bar, 3, 0, 0);
+        const r = decodeV3(bmp2, bar, 1, 0, 0);
         if (r.canvas.width !== W || r.canvas.height !== H) return done(false, '尺寸不对：' + r.canvas.width + '×' + r.canvas.height);
         const got = r.canvas.getContext('2d').getImageData(0, 0, W, H).data;
 
@@ -878,7 +886,7 @@ async function selfTest() {
         for (let k = 0; k < src.length; k++) {
             if (src[k] !== got[k]) { diff++; if (first < 0) first = k; }
         }
-        if (diff) return done(false, diff + ' 个像素通道不一致（首个 @' + first + '）');
+        if (diff) return done(false, W + '×' + H + ' 有 ' + diff + ' 个像素通道不一致（首个 @' + first + '）');
         return done(true, '');
     } catch (e) {
         return done(false, msgOf(e));
@@ -1010,6 +1018,8 @@ async function selfTest() {
     var s = secs();
     if (cur.url) { try { URL.revokeObjectURL(cur.url); } catch (e) { } }
     cur.resultBlob = m.blob;
+    cur.ratio = m.ratio;
+    cur.step = m.step;
     cur.url = URL.createObjectURL(m.blob);
 
     $('busyBar').style.width = '100%';
@@ -1032,19 +1042,27 @@ async function selfTest() {
   }
 
   /* ---------- 事件 ---------- */
-  $('file').addEventListener('change', function () {
-    var f = $('file').files && $('file').files[0];
+  /* 选图和「系统分享进来的图」走同一条路：拿到 blob + 名字就开跑 */
+  function pickFile(blob, name) {
     $('pwErr').textContent = '';
-    if (!f) return;
+    $('shareNote').hidden = true;
+    if (!blob) return;
     var pw = pwText();
     if (pw && !/^\d{4}$/.test(pw)) {
       $('pwErr').textContent = '密码必须是 4 位纯数字（比如 0300）。';
       try { $('file').value = ''; } catch (e) { }
+      setStage('sPick');
       return;
     }
-    cur.file = f;
-    cur.baseName = (f.name || 'image').replace(/\.[^.]+$/, '') || 'image';
+    cur.file = blob;
+    cur.baseName = String(name || 'image').replace(/\.[^.]+$/, '') || 'image';
     begin(false);
+  }
+
+  $('file').addEventListener('change', function () {
+    var f = $('file').files && $('file').files[0];
+    if (!f) return;
+    pickFile(f, f.name);
   });
 
   $('advBtn').addEventListener('click', function () {
@@ -1094,6 +1112,7 @@ async function selfTest() {
   });
   function selfTestDone(m) {
     $('stBtn').disabled = false;
+    cur.stSize = (m.w && m.h) ? (m.w + '×' + m.h) : '';
     if (m.ok) {
       $('stOut').className = 'stout ok';
       $('stOut').textContent = '✓ 自检通过 · ' + m.ms + 'ms';
@@ -1101,6 +1120,38 @@ async function selfTest() {
       $('stOut').className = 'stout bad';
       $('stOut').textContent = '✗ 自检失败' + (m.why ? ' · ' + m.why : '');
     }
+  }
+
+  /* ---------- 系统分享进来的图（share_target → sw.js 存 → 这里取回来解码） ---------- */
+  var SHARE_CACHE = 'ue-share';
+  function shareKey() { return new URL('./__shared_image', location.href).href; }
+  function isShared() { return /[?&](shared|share)=1(&|$)/.test(location.search || ''); }
+
+  function pullShared() {
+    if (!('caches' in window)) return Promise.resolve(null);
+    try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) { }
+    return caches.open(SHARE_CACHE).then(function (c) {
+      return c.match(shareKey()).then(function (res) {
+        if (!res) return null;
+        var nm = '';
+        try { nm = decodeURIComponent(res.headers.get('X-Name') || ''); } catch (e) { }
+        return res.blob().then(function (b) {
+          return c.delete(shareKey()).then(function () {
+            return { blob: b, name: nm || '分享的图.png' };   // 取完就删，刷新不会重复解
+          });
+        });
+      });
+    }).catch(function () { return null; });
+  }
+
+  if (isShared()) {
+    pullShared().then(function (s) {
+      if (s) pickFile(s.blob, s.name);
+      else {
+        $('shareNote').textContent = '这次分享没收到图片，请手动选一张。';
+        $('shareNote').hidden = false;
+      }
+    });
   }
 
   /* ---------- service worker（只在 https / localhost 下注册，file:// 直接跳过） ---------- */
@@ -1114,9 +1165,12 @@ async function selfTest() {
 
   /* ---------- 给自动化测试留的出口 ---------- */
   window.__UE = {
-    v: 'v0.1',
+    v: 'v0.2',
     stage: function () { return cur.stage; },
     dims: function () { return cur.dims; },
+    ratio: function () { return cur.ratio; },
+    step: function () { return cur.step; },
+    selftestSize: function () { return cur.stSize; },
     selftestText: function () { return $('stOut').textContent; },
     resultMeta: function () { return $('resMeta').textContent; },
     resultName: function () { return $('saveBtn').getAttribute('download'); },

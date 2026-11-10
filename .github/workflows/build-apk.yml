@@ -38,6 +38,8 @@ jobs:
             --min-sdk-version 24 --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true \
             --out build/ue-yintu.apk build/aligned.apk
           "$BT/apksigner" verify --print-certs -v build/ue-yintu.apk | head -25
+          echo "===== badging ====="
+          "$BT/aapt2" dump badging build/ue-yintu.apk | head -30
           python3 -c "import zipfile;z=zipfile.ZipFile('build/ue-yintu.apk');print('arsc_method',[(i.compress_type) for i in z.infolist() if i.filename=='resources.arsc'])"
           ls -l build/ue-yintu.apk
       - uses: actions/upload-artifact@v4

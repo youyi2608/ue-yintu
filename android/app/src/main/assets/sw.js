@@ -1,7 +1,7 @@
 /* 极简 service worker：
    1) 只为满足 PWA 安装条件 + 装完之后离线可用（缓存本页要的几个文件）
    2) 顺手接住系统分享进来的图（share_target → POST ./share） */
-var CACHE = 'ue-yintu-mobile-v0.2';
+var CACHE = 'ue-yintu-mobile-v0.31';
 var SHARE_CACHE = 'ue-share';
 var SHARE_KEY = new URL('./__shared_image', self.location).href;
 var FILES = ['./', './index.html', './manifest.webmanifest', './图标192.png', './图标512.png'];

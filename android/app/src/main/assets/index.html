@@ -1,0 +1,1218 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0B1526">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ue隐图">
+<meta name="format-detection" content="telephone=no">
+<title>ue隐图 · 手机版 v0.2</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="图标192.png">
+<link rel="apple-touch-icon" href="图标192.png">
+<style>
+/* ===== 深海蓝 + 苹果红；单列；宽度全部用 % / clamp() / rem，不写死布局宽度 ===== */
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --bg:#0B1526; --bg-top:#16284A; --card:#12233E; --card2:#0E1C33;
+  --line:#24405F; --fg:#EAF1FA; --sub:#8FA6C4;
+  --acc:#FF3B30; --acc2:#FF5C52;
+  --pad:clamp(0.9rem,4.6vw,1.25rem);
+  --gap:clamp(0.7rem,3.2vw,0.95rem);
+  --r:clamp(0.85rem,4vw,1.05rem);
+  --fs:clamp(13px,3.9vw,16px);
+  --fs-s:clamp(13px,3.5vw,14px);
+}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{
+  margin:0;min-height:100dvh;background-color:var(--bg);
+  background-image:radial-gradient(125% 62% at 50% -10%,var(--bg-top) 0%,rgba(22,40,74,0) 62%);
+  background-repeat:no-repeat;background-position:top center;
+  color:var(--fg);font-size:var(--fs);line-height:1.5;
+  font-family:"PingFang SC","HarmonyOS Sans SC","Noto Sans SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  -webkit-tap-highlight-color:transparent;overflow-x:hidden;
+}
+[hidden]{display:none!important}
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+.app{
+  width:100%;max-width:27rem;margin-inline:auto;min-height:100dvh;
+  padding:calc(env(safe-area-inset-top) + clamp(0.9rem,4.5vw,1.4rem)) var(--pad)
+          calc(env(safe-area-inset-bottom) + clamp(1.1rem,5vw,1.6rem));
+  display:flex;flex-direction:column;gap:var(--gap);
+}
+/* ---------- 头部 ---------- */
+.hd{display:flex;flex-direction:column;gap:.2rem;flex:none}
+.hd h1{
+  margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.35em;
+  font-size:clamp(21px,6.2vw,26px);font-weight:800;line-height:1.2;letter-spacing:.01em;
+}
+.hd h1 .mk{width:clamp(20px,5.4vw,24px);height:clamp(20px,5.4vw,24px);color:var(--acc2);flex:none}
+.hd h1 .tag{font-size:clamp(13px,3.4vw,14px);font-weight:600;color:var(--sub);letter-spacing:0}
+.hd p{margin:0;font-size:var(--fs-s);color:var(--sub)}
+/* ---------- 主区 ---------- */
+main{flex:1 1 auto;display:flex;flex-direction:column;gap:var(--gap);min-width:0}
+.stage{display:flex;flex-direction:column;gap:var(--gap);min-width:0}
+/* 虚线选框 */
+#sPick{flex:1 1 auto}
+#sPick .drop{flex:1 1 auto}
+.drop{
+  width:100%;min-height:clamp(11rem,40dvh,19rem);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.55rem;
+  padding:clamp(1.6rem,9vw,2.6rem) clamp(0.9rem,4vw,1.3rem);
+  border:0.125rem dashed var(--line);border-radius:var(--r);background:var(--card2);
+  color:var(--sub);font:inherit;text-align:center;cursor:pointer;
+  transition:border-color .16s,background-color .16s;
+}
+.drop:active,.drop:focus-visible{border-color:var(--acc);background:var(--card);outline:none}
+.drop .ic{color:var(--acc2);line-height:0}
+.drop .ic svg{width:clamp(32px,10vw,42px);height:clamp(32px,10vw,42px);display:block}
+.drop b{font-size:clamp(17px,5.2vw,20px);font-weight:800;color:var(--fg);letter-spacing:.02em}
+.drop small{font-size:var(--fs-s);color:var(--sub);line-height:1.45}
+/* 卡片 */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:clamp(0.85rem,4vw,1.1rem);min-width:0}
+.card.stack{display:flex;flex-direction:column;gap:.7rem}
+/* 按钮 */
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:.45em;width:100%;
+  min-height:clamp(2.9rem,12vw,3.3rem);padding:.5em 1em;
+  border:1px solid transparent;border-radius:clamp(0.7rem,3.4vw,0.95rem);
+  background:var(--acc);color:#fff;font:inherit;font-size:clamp(15px,4.4vw,17px);font-weight:700;
+  text-decoration:none;cursor:pointer;-webkit-appearance:none;appearance:none;
+  touch-action:manipulation;transition:background-color .15s,opacity .15s;
+}
+.btn:active{background:var(--acc2)}
+.btn.ghost{background:transparent;border-color:var(--line);color:var(--fg)}
+.btn.ghost:active{background:var(--card2)}
+.btn[disabled]{opacity:.5;pointer-events:none}
+/* 高级选项 */
+.advbtn{
+  display:flex;align-items:center;justify-content:space-between;gap:.5rem;width:100%;
+  background:transparent;border:0;padding:.25rem 0;color:var(--sub);font:inherit;font-size:var(--fs-s);
+  cursor:pointer;touch-action:manipulation;
+}
+.advbtn .car{transition:transform .18s;font-size:var(--fs-s)}
+.advbtn[aria-expanded="true"] .car{transform:rotate(180deg)}
+.adv{margin-top:.6rem;padding-top:.8rem;border-top:1px solid var(--line)}
+.swrow{display:flex;align-items:center;justify-content:space-between;gap:.75rem;min-height:2.6rem}
+.swlbl{font-size:var(--fs)}
+.sw{position:relative;flex:none;display:block}
+.sw input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;z-index:2}
+.trk{position:relative;display:block;width:clamp(2.9rem,13vw,3.3rem);height:1.55rem;border-radius:999px;background:#2A3F63;transition:background-color .18s}
+.knob{position:absolute;top:50%;left:.2rem;width:1.15rem;height:1.15rem;border-radius:50%;background:#6E86A6;transform:translateY(-50%);transition:left .18s,background-color .18s}
+.sw input:checked ~ .trk{background:var(--acc)}
+.sw input:checked ~ .trk .knob{left:calc(100% - .2rem - 1.15rem);background:#fff}
+.sw input:focus-visible ~ .trk{outline:2px solid var(--acc2);outline-offset:2px}
+.pwrow{margin-top:.7rem}
+.pw{
+  width:100%;max-width:11rem;padding:.65em .4em;
+  background:#0A1424;border:1px solid var(--line);border-radius:.65rem;color:var(--fg);
+  font:600 clamp(16px,5vw,18px)/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+  text-align:center;letter-spacing:.32em;text-indent:.32em;
+  -webkit-appearance:none;appearance:none;
+}
+.pw:focus{outline:none;border-color:var(--acc)}
+.pw[disabled]{opacity:.45}
+.hint{margin:0;font-size:var(--fs-s);color:var(--sub);line-height:1.5}
+.err{margin:.45rem 0 0;font-size:var(--fs-s);color:var(--acc2)}
+/* 进度 */
+#sBusy{flex:1 1 auto;justify-content:center}
+.busy{display:flex;flex-direction:column;gap:.85rem}
+.busy .t{font-size:clamp(15px,4.2vw,17px);font-weight:700}
+.busy .s{font-size:var(--fs-s);color:var(--sub);font-variant-numeric:tabular-nums}
+.pbar{height:.36rem;border-radius:999px;background:#0A1424;border:1px solid var(--line);overflow:hidden}
+.pbar i{display:block;height:100%;width:0%;background:var(--acc);transition:width .35s ease}
+/* 提示卡 */
+.notice{display:flex;flex-direction:column;gap:.7rem}
+.notice .big{font-size:clamp(15px,4.4vw,17px);font-weight:700}
+/* 结果 */
+.shot{
+  display:flex;align-items:center;justify-content:center;width:100%;overflow:hidden;
+  padding:.4rem;background:#0A1424;border:1px solid var(--line);border-radius:calc(var(--r) - .3rem);
+}
+.shot img{
+  display:block;width:auto;height:auto;max-width:100%;max-height:50dvh;
+  object-fit:contain;border-radius:.2rem;
+}
+.meta{margin:0;font-size:var(--fs-s);color:var(--sub);font-variant-numeric:tabular-nums}
+/* 页脚 */
+.ft{flex:none;display:flex;flex-direction:column;align-items:center;gap:.25rem;padding-top:.2rem;min-width:0}
+.ftrow{display:flex;align-items:center;gap:.55rem}
+.txtbtn{
+  background:transparent;border:0;padding:.35em .45em;color:var(--sub);font:inherit;font-size:var(--fs-s);
+  text-decoration:underline;text-underline-offset:.22em;cursor:pointer;touch-action:manipulation;
+}
+.txtbtn:active{color:var(--fg)}
+.txtbtn[disabled]{opacity:.5;pointer-events:none}
+.ver{font-size:var(--fs-s);color:var(--sub);opacity:.75}
+.stout{margin:0;min-height:1.5em;font-size:var(--fs-s);color:var(--sub);text-align:center;word-break:break-word}
+.stout.ok{color:var(--acc2)}
+.stout.bad{color:var(--acc2);opacity:.9}
+/* 横屏：压缩纵向留白，绝不横向溢出 */
+@media (orientation:landscape) and (max-height:32rem){
+  .app{padding-top:calc(env(safe-area-inset-top) + .6rem);padding-bottom:calc(env(safe-area-inset-bottom) + .7rem);gap:.55rem}
+  .hd h1{font-size:clamp(18px,4.4vw,22px)}
+  .hd p{display:none}
+  .drop{min-height:38dvh;padding-block:1rem}
+  .shot img{max-height:42dvh}
+  .btn{min-height:clamp(2.5rem,9vw,3rem)}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="hd">
+    <h1>
+      <svg class="mk" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.6" y="4.6" width="18.8" height="14.8" rx="3.4" stroke="currentColor" stroke-width="1.7"/><circle cx="8.4" cy="10.2" r="1.8" fill="currentColor"/><path d="M4.7 17.8l4.6-4.6 3.3 3.3 3.1-3.1 4.2 4.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      ue隐图 <span class="tag">手机版 v0.2</span>
+    </h1>
+    <p>纯本地还原混淆图 · 不联网 · 不上传</p>
+  </header>
+
+  <main>
+
+    <!-- ① 选图 -->
+    <section class="stage" id="sPick">
+      <label class="drop" for="file" id="dropZone">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.6" y="4.6" width="18.8" height="14.8" rx="3.4" stroke="currentColor" stroke-width="1.6"/><circle cx="8.4" cy="10.2" r="1.8" fill="currentColor"/><path d="M4.7 17.8l4.6-4.6 3.3 3.3 3.1-3.1 4.2 4.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <b>选择混淆图</b>
+        <small id="dropSub">点这里打开相册 / 相机</small>
+        <input id="file" class="sr" type="file" accept="image/*">
+      </label>
+      <p class="hint" id="shareNote" hidden></p>
+
+      <div class="card">
+        <button type="button" class="advbtn" id="advBtn" aria-expanded="false" aria-controls="advBody">
+          <span>高级选项</span><span class="car">▾</span>
+        </button>
+        <div class="adv" id="advBody" hidden>
+          <div class="swrow">
+            <span class="swlbl">密码</span>
+            <label class="sw"><input type="checkbox" id="usePw" role="switch" aria-label="使用密码"><span class="trk"><span class="knob"></span></span></label>
+          </div>
+          <div class="pwrow">
+            <input id="pw" class="pw" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4"
+                   value="0100" autocomplete="off" autocapitalize="off" spellcheck="false"
+                   disabled aria-label="4 位数字密码">
+          </div>
+          <p class="hint" style="margin-top:.6rem">
+            关着＝无密码（等于 0100）；打开才用 4 位数字：前两位＝重复次数(1~99)，第 3 位＝右侧补边，第 4 位＝底部补边。
+          </p>
+          <p class="err" id="pwErr"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ② 处理中 -->
+    <section class="stage" id="sBusy" hidden>
+      <div class="card busy">
+        <div class="t" id="busyT">正在读取图片…</div>
+        <div class="pbar"><i id="busyBar"></i></div>
+        <div class="s" id="busyS">0.0 秒</div>
+      </div>
+    </section>
+
+    <!-- ③ 大图警告 -->
+    <section class="stage" id="sBig" hidden>
+      <div class="card notice">
+        <div class="big">这张图太大，手机上可能处理不了</div>
+        <p class="hint" id="bigInfo"></p>
+        <p class="hint">仍然可以试，但可能很慢、甚至让浏览器卡住。遇到这种情况，先在电脑上把图缩小再试。</p>
+        <button type="button" class="btn" id="bigGo">仍然尝试</button>
+        <button type="button" class="btn ghost" id="bigBack">换一张</button>
+      </div>
+    </section>
+
+    <!-- ④ 不是混淆图 -->
+    <section class="stage" id="sNotMixed" hidden>
+      <div class="card notice">
+        <div class="big">这张看起来不是混淆图</div>
+        <p class="hint">没读到混淆图的色块条，按密码试解也解不出清晰的画面。</p>
+        <button type="button" class="btn" id="forceBtn">仍然尝试解码</button>
+        <button type="button" class="btn ghost" id="back2">换一张</button>
+      </div>
+    </section>
+
+    <!-- ⑤ 出错 -->
+    <section class="stage" id="sErr" hidden>
+      <div class="card notice">
+        <div class="big" id="errT">处理失败</div>
+        <p class="hint" id="errMsg"></p>
+        <button type="button" class="btn" id="errRetry">重试</button>
+        <button type="button" class="btn ghost" id="errBack">换一张</button>
+      </div>
+    </section>
+
+    <!-- ⑥ 结果 -->
+    <section class="stage" id="sResult" hidden>
+      <div class="card stack">
+        <div class="shot"><img id="resImg" alt="还原结果"></div>
+        <a class="btn" id="saveBtn" download="还原.png">保存图片</a>
+        <p class="hint">手机上点了会存到「下载 / 文件」；要进相册，长按上面那张图选「保存图片」。</p>
+        <p class="meta" id="resMeta"></p>
+        <button type="button" class="btn ghost" id="againBtn">再来一张</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="ft">
+    <div class="ftrow">
+      <button type="button" class="txtbtn" id="stBtn">自检</button>
+      <span class="ver">v0.2</span>
+    </div>
+    <p class="stout" id="stOut"></p>
+  </footer>
+</div>
+
+<noscript><p style="padding:1rem;color:#FF5C52">这个页面需要开启 JavaScript 才能解码。</p></noscript>
+
+<!-- ===================== Web Worker 源码（原样搬过来的算法全都在这块里） ===================== -->
+<script type="text/plain" id="wk-src">
+'use strict';
+
+/* 兼容层：让「原样复制」的算法在 worker 里一行不改也能跑。
+   桌面版用 document.createElement("canvas")，这里换成 OffscreenCanvas。 */
+const document = { createElement: (t) => t === 'canvas' ? new OffscreenCanvas(1, 1) : null };
+if (typeof OffscreenCanvas !== 'undefined' && !OffscreenCanvas.prototype.toBlob) {
+  OffscreenCanvas.prototype.toBlob = function (cb, type) {
+    this.convertToBlob({ type: type || 'image/png' }).then(function (b) { cb(b); });
+  };
+}
+
+const MAX_PIXELS = 16777216;   // 16,777,216
+const MAX_SIDE = 4096;
+
+/* =========================================================================
+   一、空间填充曲线（原样复制自官网 hilbert.js，改动=0）
+   ========================================================================= */
+function gilbert2d(width, height) {
+    const coordinates = [];
+    if (width >= height) { generate2d(0, 0, width, 0, 0, height, coordinates); }
+    else { generate2d(0, 0, 0, height, width, 0, coordinates); }
+    return coordinates;
+}
+function generate2d(x, y, ax, ay, bx, by, coordinates) {
+    const w = Math.abs(ax + ay);
+    const h = Math.abs(bx + by);
+    const dax = Math.sign(ax), day = Math.sign(ay);
+    const dbx = Math.sign(bx), dby = Math.sign(by);
+    if (h === 1) { for (let i = 0; i < w; i++) { coordinates.push([x, y]); x += dax; y += day; } return; }
+    if (w === 1) { for (let i = 0; i < h; i++) { coordinates.push([x, y]); x += dbx; y += dby; } return; }
+    let ax2 = Math.floor(ax / 2), ay2 = Math.floor(ay / 2);
+    let bx2 = Math.floor(bx / 2), by2 = Math.floor(by / 2);
+    const w2 = Math.abs(ax2 + ay2);
+    const h2 = Math.abs(bx2 + by2);
+    if (2 * w > 3 * h) {
+        if ((w2 % 2) && (w > 2)) { ax2 += dax; ay2 += day; }
+        generate2d(x, y, ax2, ay2, bx, by, coordinates);
+        generate2d(x + ax2, y + ay2, ax - ax2, ay - ay2, bx, by, coordinates);
+    } else {
+        if ((h2 % 2) && (h > 2)) { bx2 += dbx; by2 += dby; }
+        generate2d(x, y, bx2, by2, ax2, ay2, coordinates);
+        generate2d(x + bx2, y + by2, ax, ay, bx - bx2, by - by2, coordinates);
+        generate2d(x + (ax - dax) + (bx2 - dbx), y + (ay - day) + (by2 - dby),
+            -bx2, -by2, -(ax - ax2), -(ay - ay2), coordinates);
+    }
+}
+
+/* =========================================================================
+   二、补边 / 密码解析（原样复制自官网 imageData.js + encrypt.js）
+   ========================================================================= */
+function addPaddingToImageData(originalData, originalWidth, originalHeight, extraCols, extraRows) {
+    const newWidth = originalWidth + extraCols;
+    const newHeight = originalHeight + extraRows;
+    const newData = new Uint8ClampedArray(newWidth * newHeight * 4);
+    for (let y = 0; y < newHeight; y++) {
+        for (let x = 0; x < newWidth; x++) {
+            const newIndex = 4 * (x + y * newWidth);
+            if (y < originalHeight && x < originalWidth) {
+                const oldIndex = 4 * (x + y * originalWidth);
+                newData.set(originalData.slice(oldIndex, oldIndex + 4), newIndex);
+            } else if (y < originalHeight) {
+                const lastColIndex = 4 * (originalWidth - 1 + y * originalWidth);
+                newData.set(originalData.slice(lastColIndex, lastColIndex + 4), newIndex);
+            } else {
+                const lastRowY = originalHeight - 1;
+                const sourceX = Math.min(x, originalWidth - 1);
+                const lastRowIndex = 4 * (sourceX + lastRowY * originalWidth);
+                newData.set(originalData.slice(lastRowIndex, lastRowIndex + 4), newIndex);
+            }
+        }
+    }
+    return newData;
+}
+
+function getPassWD(pw) {
+    let step = 1, v = 0, h = 0;
+    if (pw) {
+        step = Math.max(1, parseInt(pw.slice(0, 2)) || 0);
+        v = parseInt(pw.slice(2, 3)) || 0;
+        h = parseInt(pw.slice(3, 4)) || 0;
+    }
+    return [step, v, h];
+}
+
+/* =========================================================================
+   三、核心：像素置换（原样复制自官网 encrypt.js）
+   ========================================================================= */
+function buildMap(width, height) {
+    // 返回 Int32Array：第 i 个曲线点对应的扁平像素下标
+    const curve = gilbert2d(width, height);
+    const total = width * height;
+    const flat = new Int32Array(total);
+    for (let i = 0; i < total; i++) flat[i] = curve[i][0] + curve[i][1] * width;
+    return flat;
+}
+
+function encryptImageData(imageData, step, v, h) {
+    const width = imageData.width, height = imageData.height;
+    const data = imageData.data;
+    const totalPixels = width * height;
+    const curve = gilbert2d(width, height);
+    const offset = Math.round((Math.sqrt(5) - 1) / 2 * totalPixels);
+
+    const oldPositions = new Array(totalPixels);
+    const newPositions = new Array(totalPixels);
+    for (let i = 0; i < totalPixels; i++) {
+        const old_pos = curve[i];
+        const new_pos = curve[(i + offset) % totalPixels];
+        oldPositions[i] = 4 * (old_pos[0] + old_pos[1] * width);
+        newPositions[i] = 4 * (new_pos[0] + new_pos[1] * width);
+    }
+    const buffer = new Uint8ClampedArray(data.length);
+    for (let j = 0; j < step; j++) {
+        for (let i = 0; i < totalPixels; i++) {
+            const old_p = oldPositions[i], new_p = newPositions[i];
+            buffer[new_p] = data[old_p];
+            buffer[new_p + 1] = data[old_p + 1];
+            buffer[new_p + 2] = data[old_p + 2];
+            buffer[new_p + 3] = data[old_p + 3];
+        }
+        data.set(buffer);
+    }
+    const newData = addPaddingToImageData(data, width, height, v, h);
+    return new ImageData(newData, width + v, height + h);
+}
+
+function decryptImageData(imageData, step, v, h) {
+    const width = imageData.width, height = imageData.height;
+    const data = imageData.data;
+    const totalPixels = width * height;
+    const curve = gilbert2d(width, height);
+    const offset = Math.round((Math.sqrt(5) - 1) / 2 * totalPixels);
+
+    const oldPositions = new Array(totalPixels);
+    const newPositions = new Array(totalPixels);
+    for (let i = 0; i < totalPixels; i++) {
+        const old_pos = curve[i];
+        const new_pos = curve[(i + offset) % totalPixels];
+        oldPositions[i] = 4 * (old_pos[0] + old_pos[1] * width);
+        newPositions[i] = 4 * (new_pos[0] + new_pos[1] * width);
+    }
+    const buffer = new Uint8ClampedArray(data.length);
+    for (let j = 0; j < step; j++) {
+        for (let i = 0; i < totalPixels; i++) {
+            const old_p = oldPositions[i], new_p = newPositions[i];
+            buffer[old_p] = data[new_p];
+            buffer[old_p + 1] = data[new_p + 1];
+            buffer[old_p + 2] = data[new_p + 2];
+            buffer[old_p + 3] = data[new_p + 3];
+        }
+        data.set(buffer);
+    }
+    return imageData;
+}
+
+// 黑盒取映射表（原样复制自官网 getScrambledIndices）
+function getScrambledIndices(width, height, step, v, h) {
+    const cvs = document.createElement("canvas");
+    cvs.width = width; cvs.height = height;
+    const ctx = cvs.getContext("2d");
+    const imgData = ctx.createImageData(width, height);
+    const data = imgData.data;
+    const total = width * height;
+    for (let i = 0; i < total; i++) {
+        const idx = i * 4;
+        data[idx]     = i & 0xFF;
+        data[idx + 1] = (i >> 8) & 0xFF;
+        data[idx + 2] = (i >> 16) & 0xFF;
+        data[idx + 3] = (i >> 24) & 0xFF;
+    }
+    const scrambled = encryptImageData(imgData, step, v, h);
+    const sData = scrambled.data;
+    const indices = new Int32Array(total);
+    for (let i = 0; i < total; i++) {
+        const idx = i * 4;
+        indices[i] = sData[idx] | (sData[idx + 1] << 8) | (sData[idx + 2] << 16) | (sData[idx + 3] << 24);
+    }
+    return indices;
+}
+
+/* =========================================================================
+   四、V3 编码：顶部提示条 + 底部 32px“避难所” + 色块条（原样复制自官网 encrypt()）
+   ========================================================================= */
+const TOTAL_BLOCKS = 34;
+
+function encodeV3(img, step, v, h) {
+    return new Promise((resolve) => {
+        const tempCvs = document.createElement("canvas");
+        const activeW = img.width;
+        const activeH = img.height + 64;
+        tempCvs.width = activeW;
+        tempCvs.height = activeH;
+        const tempCtx = tempCvs.getContext("2d");
+
+        // 1.1 顶部白底黑字提示区
+        tempCtx.fillStyle = "white";
+        tempCtx.fillRect(0, 0, activeW, 32);
+        tempCtx.fillStyle = "black";
+        tempCtx.textAlign = "center";
+        tempCtx.textBaseline = "middle";
+        const bannerText = "[已混淆] 解码：ue隐图（或任意番茄系解码器）";
+        let fontSize = 20;
+        tempCtx.font = `bold ${fontSize}px monospace`;
+        let textWidth = tempCtx.measureText(bannerText).width;
+        if (textWidth > activeW - 10) {
+            fontSize = fontSize * ((activeW - 10) / textWidth);
+            tempCtx.font = `bold ${fontSize}px monospace`;
+        }
+        tempCtx.fillText(bannerText, activeW / 2, 16);
+
+        // 1.2 原图下移 32px
+        tempCtx.drawImage(img, 0, 32);
+
+        const imgData = tempCtx.getImageData(0, 0, activeW, activeH);
+        const scrambledIndices = getScrambledIndices(activeW, activeH, step, v, h);
+
+        // 1.3 把将被色块毁掉的像素搬到“避难所”
+        const startIdx = (activeH - 32) * activeW;
+        const data = imgData.data;
+        const backupStart = (img.height + 32) * activeW;
+        for (let i = 0; i < 32 * activeW; i++) {
+            const srcIdx = scrambledIndices[startIdx + i] * 4;
+            const destIdx = (backupStart + i) * 4;
+            data[destIdx]     = data[srcIdx];
+            data[destIdx + 1] = data[srcIdx + 1];
+            data[destIdx + 2] = data[srcIdx + 2];
+            data[destIdx + 3] = data[srcIdx + 3];
+        }
+
+        // 2. 核心置换
+        const newImageData = encryptImageData(imgData, step, v, h);
+
+        // 3. 最终画布 + 色块条
+        const cvs = document.createElement("canvas");
+        const finalWidth = img.width + (v || 0);
+        const finalHeight = img.height + 64 + (h || 0);
+        cvs.width = finalWidth;
+        cvs.height = finalHeight;
+        const ctx = cvs.getContext("2d");
+        ctx.putImageData(newImageData, 0, 0);
+
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, img.height + 32, finalWidth, 8);
+
+        const wBits = img.width.toString(2).padStart(16, "0");
+        const hBits = img.height.toString(2).padStart(16, "0");
+        const payload = wBits + hBits;
+        const blockWidth = finalWidth / TOTAL_BLOCKS;
+        const startY = img.height + 40;
+        for (let i = 0; i < TOTAL_BLOCKS; i++) {
+            if (i === 0) ctx.fillStyle = "#ff0000";
+            else if (i === TOTAL_BLOCKS - 1) ctx.fillStyle = "#0000ff";
+            else ctx.fillStyle = payload[i - 1] === "1" ? "#ffffff" : "#000000";
+            ctx.fillRect(Math.floor(i * blockWidth), startY, Math.ceil(blockWidth), 24);
+        }
+        cvs.toBlob(b => resolve(b), "image/png");
+    });
+}
+
+/* =========================================================================
+   五、V2 编码：只做置换 + 补边（官网旧版）
+   ========================================================================= */
+function encodeV2(img, step, v, h) {
+    return new Promise((resolve) => {
+        const cvs = document.createElement("canvas");
+        const width = (cvs.width = img.width);
+        const height = (cvs.height = img.height);
+        const ctx = cvs.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        const imgData = ctx.getImageData(0, 0, width, height);
+        const newImageData = encryptImageData(imgData, step, v, h);
+        ctx.putImageData(newImageData, 0, 0);
+        cvs.toBlob(b => resolve(b), "image/png");
+    });
+}
+
+/* =========================================================================
+   六、解码（原样复制自官网 decrypt()，去掉 PNG 元数据部分）
+   ========================================================================= */
+function readBarcode(img) {
+    const tempCvs = document.createElement("canvas");
+    tempCvs.width = img.width; tempCvs.height = img.height;
+    const tempCtx = tempCvs.getContext("2d");
+    tempCtx.drawImage(img, 0, 0);
+    const sampleY = Math.max(0, img.height - 2);
+    const row = tempCtx.getImageData(0, sampleY, img.width, 1).data;
+    const blockWidth = img.width / TOTAL_BLOCKS;
+
+    const idxRed = Math.floor(0.5 * blockWidth) * 4;
+    const rRed = row[idxRed], gRed = row[idxRed + 1], bRed = row[idxRed + 2];
+    const isRed = (rRed > gRed + 40) && (rRed > bRed + 40);
+    const idxBlue = Math.floor((TOTAL_BLOCKS - 0.5) * blockWidth) * 4;
+    const rBlue = row[idxBlue], gBlue = row[idxBlue + 1], bBlue = row[idxBlue + 2];
+    const isBlue = (bBlue > rBlue + 40) && (bBlue > gBlue + 40);
+
+    if (!isRed || !isBlue) return null;
+    let bits = "";
+    for (let i = 1; i <= 32; i++) {
+        const sampleX = Math.floor((i + 0.5) * blockWidth);
+        const idx = sampleX * 4;
+        const r = row[idx], g = row[idx + 1], b = row[idx + 2];
+        bits += (0.299 * r + 0.587 * g + 0.114 * b) > 127 ? "1" : "0";
+    }
+    const w = parseInt(bits.substring(0, 16), 2);
+    const h = parseInt(bits.substring(16, 32), 2);
+    if (!(w > 10 && w <= 16384 && h > 10 && h <= 16384)) return null;
+    return { w, h };
+}
+
+function decodeV3(img, bar, step, v, h) {
+    const decodedW = bar.w, decodedH = bar.h;
+    const tempCvs = document.createElement("canvas");
+    const tempCtx = tempCvs.getContext("2d");
+    const scalePercent = Math.round((img.width / (decodedW + (v || 0))) * 100);
+    const isResized = scalePercent !== 100;
+    const topBannerHeight = isResized ? 32 : 0;
+
+    tempCvs.width = decodedW;
+    tempCvs.height = decodedH + 64;
+    if (isResized) tempCtx.drawImage(img, 0, 0, decodedW + (v || 0), decodedH + 64 + (h || 0));
+    else tempCtx.drawImage(img, 0, 0);
+
+    const imgData = tempCtx.getImageData(0, 0, decodedW, decodedH + 64);
+    const newImageData = decryptImageData(imgData, step, v, h);
+
+    const scrambledIndices = getScrambledIndices(decodedW, decodedH + 64, step, v, h);
+    const startIdx = (decodedH + 32) * decodedW;
+    const decData = newImageData.data;
+    for (let i = 0; i < 32 * decodedW; i++) {
+        const srcIdx = scrambledIndices[startIdx + i] * 4;
+        const destIdx = (startIdx + i) * 4;
+        decData[srcIdx]     = decData[destIdx];
+        decData[srcIdx + 1] = decData[destIdx + 1];
+        decData[srcIdx + 2] = decData[destIdx + 2];
+        decData[srcIdx + 3] = decData[destIdx + 3];
+    }
+
+    const tempCvs2 = document.createElement("canvas");
+    tempCvs2.width = decodedW;
+    tempCvs2.height = decodedH + 64;
+    tempCvs2.getContext("2d").putImageData(newImageData, 0, 0);
+
+    const cvs = document.createElement("canvas");
+    cvs.width = decodedW;
+    cvs.height = decodedH + topBannerHeight;
+    const ctx = cvs.getContext("2d");
+    if (isResized) {
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, decodedW, 32);
+        ctx.fillStyle = "black";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        const warnText = "输入图像尺寸曾被缩小或放大, 请使用全分辨率原图进行解码效果更佳!";
+        let fontSize = 20;
+        ctx.font = `bold ${fontSize}px sans-serif`;
+        const textWidth = ctx.measureText(warnText).width;
+        if (textWidth > decodedW - 10) {
+            fontSize = fontSize * ((decodedW - 10) / textWidth);
+            ctx.font = `bold ${fontSize}px sans-serif`;
+        }
+        ctx.fillText(warnText, decodedW / 2, 16);
+        ctx.drawImage(tempCvs2, 0, 32, decodedW, decodedH, 0, 32, decodedW, decodedH);
+    } else {
+        ctx.drawImage(tempCvs2, 0, 32, decodedW, decodedH, 0, 0, decodedW, decodedH);
+    }
+    return { canvas: cvs, resized: isResized };
+}
+
+function decodeV2(img, step, v, h) {
+    const tempCvs = document.createElement("canvas");
+    tempCvs.width = img.width;
+    tempCvs.height = img.height;
+    const tempCtx = tempCvs.getContext("2d");
+    tempCtx.drawImage(img, 0, 0);
+
+    const width = img.width - v, height = img.height - h;
+    const imgData = tempCtx.getImageData(0, 0, width, height);
+    const newImageData = decryptImageData(imgData, step, v, h);
+
+    const cvs = document.createElement("canvas");
+    cvs.width = width;
+    cvs.height = height;
+    cvs.getContext("2d").putImageData(newImageData, 0, 0);
+    return { canvas: cvs, resized: false };
+}
+
+/* =========================================================================
+   七、自动判断用的平滑度打分（原样复制自官网第 7 节 + 第 9 节）
+   ========================================================================= */
+/* 说明：连续 step 次置换 == 沿曲线一次位移 step*offset 位（同一个置换的幂），
+   所以不用真的跑 step 遍，一次位移就能算出任意 step 的结果。 */
+function makeDecoder(srcData, w, h) {
+    const total = w * h;
+    const flat = buildMap(w, h);
+    const offset = Math.round((Math.sqrt(5) - 1) / 2 * total);
+    return { w, h, total, flat, offset, src: srcData, out: new Uint8ClampedArray(srcData.length) };
+}
+
+function decodePass(d, shift) {
+    const { total, flat, src, out } = d;
+    for (let i = 0; i < total; i++) {
+        const o = flat[i] * 4;
+        const n = flat[(i + shift) % total] * 4;
+        out[o] = src[n]; out[o + 1] = src[n + 1]; out[o + 2] = src[n + 2]; out[o + 3] = src[n + 3];
+    }
+    return out;
+}
+
+function scoreRegion(d, y0, y1) {
+    const { w, out } = d;
+    const rows = y1 - y0;
+    const stride = Math.max(1, Math.floor(w * rows / 6000));
+    let sum = 0, n = 0;
+    for (let y = y0; y < y1 - 1; y++) {
+        for (let x = 0; x < w - 1; x += stride) {
+            const i = x + y * w;
+            const a = i * 4, b = (i + 1) * 4, c = (i + w) * 4;
+            sum += Math.abs(out[a] - out[b]) + Math.abs(out[a + 1] - out[b + 1]) + Math.abs(out[a + 2] - out[b + 2]);
+            sum += Math.abs(out[a] - out[c]) + Math.abs(out[a + 1] - out[c + 1]) + Math.abs(out[a + 2] - out[c + 2]);
+            n += 2;
+        }
+    }
+    return n ? sum / n / 3 : Infinity;
+}
+
+function grabPixels(img, w, h) {
+    const c = document.createElement("canvas");
+    c.width = w; c.height = h;
+    const x = c.getContext("2d");
+    x.drawImage(img, 0, 0);
+    return x.getImageData(0, 0, w, h).data;
+}
+
+/* 判据说明（重要）：
+   “在曲线上整体位移”这件事本身保持局部连贯 —— 所以只看“相邻像素差异绝对值”分不出对错，
+   必须拿**解码后**和**解码前同一块区域**自比：真的解对了，平滑度会掉到原来的 1/3 左右；
+   密码错的时候，解出来只是另一种位移，平滑度跟原来差不多。 */
+function scoreCanvas(canvas) {
+    const w = canvas.width, h = canvas.height;
+    if (w < 8 || h < 8) return Infinity;
+    const d = canvas.getContext("2d").getImageData(0, 0, w, h).data;
+    const stride = Math.max(1, Math.floor(w * h / 6000));
+    let sum = 0, n = 0;
+    for (let y = 0; y < h - 1; y++) {
+        for (let x = 0; x < w - 1; x += stride) {
+            const i = x + y * w, a = i * 4, b = (i + 1) * 4, c = (i + w) * 4;
+            sum += Math.abs(d[a] - d[b]) + Math.abs(d[a + 1] - d[b + 1]) + Math.abs(d[a + 2] - d[b + 2]);
+            sum += Math.abs(d[a] - d[c]) + Math.abs(d[a + 1] - d[c + 1]) + Math.abs(d[a + 2] - d[c + 2]);
+            n += 2;
+        }
+    }
+    return n ? sum / n / 3 : Infinity;
+}
+
+function baseScore(img, bar) {
+    const w = bar ? bar.w : img.width;
+    const h = bar ? bar.h : img.height;
+    if (w < 8 || h < 8) return 1;
+    const c = document.createElement("canvas");
+    c.width = w; c.height = h;
+    c.getContext("2d").drawImage(img, 0, 0);
+    return scoreCanvas(c);
+}
+
+const SCORE_GATE = 0.75;   // 解码后平滑度要掉到原来的 3/4 以下，才认为是“真解出来了”
+
+/* =========================================================================
+   八、手机版新增：只用上面原样搬来的原语做「判断 + 解码 + 自检」，不碰算法本身
+   ========================================================================= */
+function post(m) { self.postMessage(m); }
+function msgOf(e) { return (e && e.message) ? e.message : String(e); }
+function canvasToBlob(canvas) {
+    return new Promise(r => canvas.toBlob(b => r(b), "image/png"));
+}
+
+/* V2 没有色块条，靠平滑度粗判一次（每个候选只跑 1 遍位移，很便宜） */
+function probeV2(img, pw) {
+    const W = img.width, H = img.height;
+    if (W < 8 || H < 8) return null;
+    const d = makeDecoder(grabPixels(img, W, H), W, H);
+    const base = Math.max(scoreRegion({ w: d.w, out: d.src }, 0, H), 0.01);
+    const steps = pw ? [getPassWD(pw)[0]] : [1, 2, 3, 5, 10, 20];
+    let best = null;
+    for (let k = 0; k < steps.length; k++) {
+        const st = steps[k];
+        decodePass(d, (st * d.offset) % d.total);
+        const ratio = scoreRegion(d, 0, H) / base;
+        if (!best || ratio < best.ratio) best = { ratio: ratio, step: st };
+    }
+    return best;
+}
+
+let S = null;
+
+self.onmessage = function (e) {
+    Promise.resolve().then(() => onMsg(e.data)).catch(function (err) {
+        post({ t: 'err', step: '处理失败', msg: msgOf(err) });
+    });
+};
+
+async function onMsg(m) {
+    if (m.t === 'open') return openImage(m);
+    if (m.t === 'go') return work();
+    if (m.t === 'selftest') return selfTest();
+}
+
+async function openImage(m) {
+    S = { blob: m.blob, pw: (m.pw || ''), force: !!m.force };
+    post({ t: 'stage', s: '读取图片', p: 8 });
+
+    let bmp;
+    try {
+        /* 关键：imageOrientation:'none' —— 绝不让浏览器按 EXIF 自动旋转，否则像素被改、整体错位 */
+        bmp = await createImageBitmap(m.blob, { imageOrientation: 'none' });
+    } catch (e) {
+        throw new Error('这张图打不开：格式不支持，或者文件已经损坏');
+    }
+    if (!bmp || !bmp.width || !bmp.height) throw new Error('这张图读不出尺寸，可能已经损坏');
+    S.bmp = bmp;
+
+    const px = bmp.width * bmp.height;
+    const big = (px > MAX_PIXELS) || (bmp.width > MAX_SIDE) || (bmp.height > MAX_SIDE);
+    post({ t: 'dims', w: bmp.width, h: bmp.height, big: big });
+    /* 大图先停下来问一句；但用户已经点过「仍然尝试/仍然尝试解码」就不再问第二遍 */
+    if (big && !S.force) return;
+    return work();
+}
+
+async function work() {
+    const bmp = S.bmp, pw = S.pw;
+    const pass = getPassWD(pw);
+    let step = pass[0], v = pass[1], h = pass[2];
+
+    post({ t: 'stage', s: '判断是不是混淆图', p: 24 });
+    const bar = readBarcode(bmp);
+
+    if (!bar && !S.force) {
+        post({ t: 'stage', s: '按密码试解一次', p: 36 });
+        const p = probeV2(bmp, pw);
+        if (!p || p.ratio >= SCORE_GATE) { post({ t: 'notmixed' }); return; }
+        step = p.step;
+    }
+
+    post({ t: 'stage', s: '解码中（这一步最慢）', p: 52 });
+    const r = bar ? decodeV3(bmp, bar, step, v, h) : decodeV2(bmp, step, v, h);
+
+    post({ t: 'stage', s: '生成图片', p: 84 });
+    const blob = await canvasToBlob(r.canvas);
+    if (!blob) throw new Error('生成 PNG 失败（内存可能不够）');
+
+    const notes = [];
+    if (bar && r.resized) notes.push('原图尺寸和色块条记录的不一致（图被缩放过），清晰度可能受影响');
+    let ratio = null;
+    try {
+        const bs = Math.max(baseScore(bmp, bar), 0.01);
+        ratio = scoreCanvas(r.canvas) / bs;
+        if (ratio >= SCORE_GATE) notes.push('解出来不太像原图，确认一下高级选项里的密码');
+    } catch (e) { /* 只是提示，失败就不提示 */ }
+
+    post({
+        t: 'done',
+        blob: blob,
+        w: r.canvas.width,
+        h: r.canvas.height,
+        step: step,
+        ratio: ratio,
+        note: notes.join('；')
+    });
+}
+
+/* 自检：本地造图 → V3 混淆 → 解码 → 逐像素比对
+   尺寸每次随机挑一个（以前固定 400×300 会漏掉别的几何），
+   密码固定走默认的 step=1（无密码那条路），这条路上编码→解码是严格无损的。 */
+const SELF_SIZES = [[400, 300], [240, 180], [200, 150], [100, 80], [333, 217], [320, 240], [160, 120], [480, 360]];
+async function selfTest() {
+    const t0 = performance.now();
+    const pick = SELF_SIZES[Math.floor(Math.random() * SELF_SIZES.length)];
+    const W = pick[0], H = pick[1];
+    const done = (ok, why) => post({ t: 'selftest', ok: ok, ms: Math.round(performance.now() - t0), why: why || '', w: W, h: H });
+    try {
+        const c = document.createElement('canvas');
+        c.width = W; c.height = H;
+        const x = c.getContext('2d');
+        const g = x.createLinearGradient(0, 0, W, H);
+        g.addColorStop(0, '#FF3B30'); g.addColorStop(0.55, '#12233E'); g.addColorStop(1, '#EAF1FA');
+        x.fillStyle = g; x.fillRect(0, 0, W, H);
+        x.fillStyle = '#8FA6C4';
+        for (let i = 0; i < 5; i++) x.fillRect(W * 0.07 + i * W * 0.165, H * 0.12 + (i % 3) * H * 0.15, W * 0.125, H * 0.115);
+        x.fillStyle = '#0B1526'; x.fillRect(W * 0.115, H * 0.65, W * 0.4, H * 0.235);
+        x.fillStyle = '#FF5C52'; x.fillRect(W * 0.6, H * 0.59, W * 0.28, H * 0.31);
+        x.font = 'bold ' + Math.max(9, Math.round(H / 8)) + 'px sans-serif';
+        x.fillStyle = '#EAF1FA'; x.textAlign = 'left'; x.textBaseline = 'alphabetic';
+        x.fillText('自检 v0.2', W * 0.07, H * 0.57);
+        const src = x.getImageData(0, 0, W, H).data;
+
+        const bmp = await createImageBitmap(c);
+        const enc = await encodeV3(bmp, 1, 0, 0);
+        if (!enc) return done(false, '混淆这一步没出图');
+        const bmp2 = await createImageBitmap(enc, { imageOrientation: 'none' });
+        const bar = readBarcode(bmp2);
+        if (!bar || bar.w !== W || bar.h !== H) return done(false, '色块条读不出来（' + (bar ? bar.w + '×' + bar.h : '空') + '）');
+
+        const r = decodeV3(bmp2, bar, 1, 0, 0);
+        if (r.canvas.width !== W || r.canvas.height !== H) return done(false, '尺寸不对：' + r.canvas.width + '×' + r.canvas.height);
+        const got = r.canvas.getContext('2d').getImageData(0, 0, W, H).data;
+
+        let diff = 0, first = -1;
+        for (let k = 0; k < src.length; k++) {
+            if (src[k] !== got[k]) { diff++; if (first < 0) first = k; }
+        }
+        if (diff) return done(false, W + '×' + H + ' 有 ' + diff + ' 个像素通道不一致（首个 @' + first + '）');
+        return done(true, '');
+    } catch (e) {
+        return done(false, msgOf(e));
+    }
+}
+</script>
+
+<!-- ===================== 主线程 ===================== -->
+<script>
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var WATCHDOG_MS = 180000;
+
+  var STAGES = ['sPick', 'sBusy', 'sBig', 'sNotMixed', 'sErr', 'sResult'];
+  var cur = {
+    file: null, baseName: 'image', stage: 'pick', resultBlob: null, url: null,
+    t0: 0, timer: 0, dims: null, force: false
+  };
+  var wk = null, wd = 0;
+
+  /* ---------- 工具 ---------- */
+  function setStage(id) {
+    for (var i = 0; i < STAGES.length; i++) {
+      var el = $(STAGES[i]);
+      if (el) el.hidden = (STAGES[i] !== id);
+    }
+    cur.stage = id;
+    /* 停在等用户操作的页面上时，别把「超时」的计时器挂在用户头上 */
+    if (id !== 'sBusy') clearTimeout(wd);
+    try { window.scrollTo(0, 0); } catch (e) { }
+  }
+  function pwText() { return $('usePw').checked ? $('pw').value.trim() : ''; }
+  function now() { return performance.now(); }
+  function secs() { return (now() - cur.t0) / 1000; }
+  function showErr(stepTitle, why) {
+    clearInterval(cur.timer);
+    $('errT').textContent = stepTitle || '处理失败';
+    $('errMsg').textContent = why || '未知原因';
+    setStage('sErr');
+  }
+
+  /* ---------- worker ---------- */
+  function getWorker() {
+    if (wk) return wk;
+    var src = $('wk-src').textContent;
+    var url = URL.createObjectURL(new Blob([src], { type: 'text/javascript' }));
+    wk = new Worker(url);
+    wk.onmessage = onWorkerMsg;
+    wk.onerror = function (e) {
+      wk = null;
+      showErr('处理失败', '页面里的解码脚本没能启动（多半是这台手机的浏览器太旧，需要新一点的 Chrome / Edge）'
+        + (e && e.message ? '：' + e.message : ''));
+    };
+    return wk;
+  }
+  function post(msg) {
+    armWatchdog();
+    try { getWorker().postMessage(msg); }
+    catch (e) {
+      showErr('处理失败', '没法把图片交给后台线程：' + (e && e.message ? e.message : e));
+    }
+  }
+  function armWatchdog() {
+    clearTimeout(wd);
+    wd = setTimeout(function () {
+      try { if (wk) { wk.terminate(); wk = null; } } catch (e) { }
+      showErr('处理超时', '超过 3 分钟还没结果，多半是图太大把浏览器卡住了。换一张小一点的图再试。');
+    }, WATCHDOG_MS);
+  }
+  function killWorker() {
+    clearTimeout(wd);
+    try { if (wk) { wk.terminate(); wk = null; } } catch (e) { }
+  }
+
+  /* ---------- 计时 ---------- */
+  function startTimer() {
+    cur.t0 = now();
+    clearInterval(cur.timer);
+    cur.timer = setInterval(function () {
+      if (cur.stage === 'sBusy') $('busyS').textContent = secs().toFixed(1) + ' 秒';
+    }, 100);
+    $('busyS').textContent = '0.0 秒';
+  }
+
+  /* ---------- 流程 ---------- */
+  function begin(force) {
+    if (!cur.file) { setStage('sPick'); return; }
+    cur.force = !!force;
+    $('busyT').textContent = '正在读取图片…';
+    $('busyBar').style.width = '6%';
+    setStage('sBusy');
+    startTimer();
+    post({ t: 'open', blob: cur.file, pw: pwText(), force: cur.force });
+  }
+
+  function onWorkerMsg(ev) {
+    var m = ev.data || {};
+    armWatchdog();
+
+    if (m.t === 'stage') {
+      if (cur.stage === 'sBusy') {
+        $('busyT').textContent = m.s + '…';
+        if (m.p) $('busyBar').style.width = m.p + '%';
+      }
+      return;
+    }
+    if (m.t === 'dims') {
+      cur.dims = { w: m.w, h: m.h };
+      if (m.big && !cur.force) {
+        clearInterval(cur.timer);
+        var mega = (m.w * m.h / 1e6).toFixed(1);
+        $('bigInfo').textContent = m.w + ' × ' + m.h + '（约 ' + mega + ' 百万像素）。'
+          + '超过 4096 像素或 1677 万像素的图，手机内存容易吃不消。';
+        setStage('sBig');
+      }
+      return;
+    }
+    if (m.t === 'notmixed') { clearInterval(cur.timer); setStage('sNotMixed'); return; }
+    if (m.t === 'done') { finish(m); return; }
+    if (m.t === 'err') { showErr(m.step || '处理失败', m.msg); return; }
+    if (m.t === 'selftest') { selfTestDone(m); return; }
+  }
+
+  function finish(m) {
+    clearInterval(cur.timer);
+    clearTimeout(wd);
+    var s = secs();
+    if (cur.url) { try { URL.revokeObjectURL(cur.url); } catch (e) { } }
+    cur.resultBlob = m.blob;
+    cur.ratio = m.ratio;
+    cur.step = m.step;
+    cur.url = URL.createObjectURL(m.blob);
+
+    $('busyBar').style.width = '100%';
+    $('resImg').src = cur.url;
+    var a = $('saveBtn');
+    a.href = cur.url;
+    a.download = cur.baseName + '_还原.png';
+
+    var meta = m.w + ' × ' + m.h + ' · 用时 ' + (s < 10 ? s.toFixed(2) : s.toFixed(1)) + ' 秒';
+    if (m.note) meta += ' · ' + m.note;
+    $('resMeta').textContent = meta;
+    setStage('sResult');
+  }
+
+  function reset() {
+    clearInterval(cur.timer);
+    cur.file = null; cur.resultBlob = null; cur.dims = null;
+    try { $('file').value = ''; } catch (e) { }
+    setStage('sPick');
+  }
+
+  /* ---------- 事件 ---------- */
+  /* 选图和「系统分享进来的图」走同一条路：拿到 blob + 名字就开跑 */
+  function pickFile(blob, name) {
+    $('pwErr').textContent = '';
+    $('shareNote').hidden = true;
+    if (!blob) return;
+    var pw = pwText();
+    if (pw && !/^\d{4}$/.test(pw)) {
+      $('pwErr').textContent = '密码必须是 4 位纯数字（比如 0300）。';
+      try { $('file').value = ''; } catch (e) { }
+      setStage('sPick');
+      return;
+    }
+    cur.file = blob;
+    cur.baseName = String(name || 'image').replace(/\.[^.]+$/, '') || 'image';
+    begin(false);
+  }
+
+  $('file').addEventListener('change', function () {
+    var f = $('file').files && $('file').files[0];
+    if (!f) return;
+    pickFile(f, f.name);
+  });
+
+  $('advBtn').addEventListener('click', function () {
+    var open = this.getAttribute('aria-expanded') !== 'true';
+    this.setAttribute('aria-expanded', open ? 'true' : 'false');
+    $('advBody').hidden = !open;
+  });
+
+  $('usePw').addEventListener('change', function () {
+    var on = $('usePw').checked;
+    $('pw').disabled = !on;
+    if (on) { try { $('pw').focus(); } catch (e) { } }
+    $('pwErr').textContent = '';
+  });
+
+  $('pw').addEventListener('input', function () {
+    this.value = this.value.replace(/\D/g, '').slice(0, 4);
+    $('pwErr').textContent = '';
+  });
+
+  $('bigGo').addEventListener('click', function () {
+    $('busyT').textContent = '继续处理…';
+    $('busyBar').style.width = '30%';
+    setStage('sBusy');
+    startTimer();
+    post({ t: 'go' });
+  });
+  $('bigBack').addEventListener('click', reset);
+
+  $('forceBtn').addEventListener('click', function () { begin(true); });
+  $('back2').addEventListener('click', reset);
+  $('againBtn').addEventListener('click', reset);
+
+  $('errRetry').addEventListener('click', function () {
+    killWorker();
+    if (cur.file) begin(cur.force); else reset();
+  });
+  $('errBack').addEventListener('click', function () { killWorker(); reset(); });
+
+  /* ---------- 自检 ---------- */
+  $('stBtn').addEventListener('click', function () {
+    if (cur.stage === 'sBusy') return;
+    $('stBtn').disabled = true;
+    $('stOut').className = 'stout';
+    $('stOut').textContent = '自检中…';
+    post({ t: 'selftest' });
+  });
+  function selfTestDone(m) {
+    $('stBtn').disabled = false;
+    cur.stSize = (m.w && m.h) ? (m.w + '×' + m.h) : '';
+    if (m.ok) {
+      $('stOut').className = 'stout ok';
+      $('stOut').textContent = '✓ 自检通过 · ' + m.ms + 'ms';
+    } else {
+      $('stOut').className = 'stout bad';
+      $('stOut').textContent = '✗ 自检失败' + (m.why ? ' · ' + m.why : '');
+    }
+  }
+
+  /* ---------- 系统分享进来的图（share_target → sw.js 存 → 这里取回来解码） ---------- */
+  var SHARE_CACHE = 'ue-share';
+  function shareKey() { return new URL('./__shared_image', location.href).href; }
+  function isShared() { return /[?&](shared|share)=1(&|$)/.test(location.search || ''); }
+
+  function pullShared() {
+    if (!('caches' in window)) return Promise.resolve(null);
+    try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) { }
+    return caches.open(SHARE_CACHE).then(function (c) {
+      return c.match(shareKey()).then(function (res) {
+        if (!res) return null;
+        var nm = '';
+        try { nm = decodeURIComponent(res.headers.get('X-Name') || ''); } catch (e) { }
+        return res.blob().then(function (b) {
+          return c.delete(shareKey()).then(function () {
+            return { blob: b, name: nm || '分享的图.png' };   // 取完就删，刷新不会重复解
+          });
+        });
+      });
+    }).catch(function () { return null; });
+  }
+
+  if (isShared()) {
+    pullShared().then(function (s) {
+      if (s) pickFile(s.blob, s.name);
+      else {
+        $('shareNote').textContent = '这次分享没收到图片，请手动选一张。';
+        $('shareNote').hidden = false;
+      }
+    });
+  }
+
+  /* ---------- service worker（只在 https / localhost 下注册，file:// 直接跳过） ---------- */
+  try {
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('sw.js').catch(function () { });
+      });
+    }
+  } catch (e) { }
+
+  /* ---------- 给自动化测试留的出口 ---------- */
+  window.__UE = {
+    v: 'v0.2',
+    stage: function () { return cur.stage; },
+    dims: function () { return cur.dims; },
+    ratio: function () { return cur.ratio; },
+    step: function () { return cur.step; },
+    selftestSize: function () { return cur.stSize; },
+    selftestText: function () { return $('stOut').textContent; },
+    resultMeta: function () { return $('resMeta').textContent; },
+    resultName: function () { return $('saveBtn').getAttribute('download'); },
+    resultDataURL: function () {
+      return new Promise(function (res, rej) {
+        if (!cur.resultBlob) return rej(new Error('还没有结果'));
+        var fr = new FileReader();
+        fr.onload = function () { res(fr.result); };
+        fr.onerror = function () { rej(new Error('读不出结果')); };
+        fr.readAsDataURL(cur.resultBlob);
+      });
+    }
+  };
+})();
+</script>
+<script>
+/* --- Android APK 分享接入（仅 APK 内使用，网页版没有这段） --- */
+(function () {
+  function feed(url) {
+    fetch(url).then(function (r) { return r.blob(); }).then(function (blob) {
+      var name = 'shared.' + ((blob.type || 'image/png').split('/')[1] || 'png');
+      var file = new File([blob], name, { type: blob.type || 'image/png' });
+      var inp = document.getElementById('file');
+      try {
+        var dt = new DataTransfer();
+        dt.items.add(file);
+        inp.files = dt.files;
+        inp.dispatchEvent(new Event('change'));
+      } catch (e) {
+        try { window.UE_SHARED_BLOB = file; } catch (e2) {}
+      }
+    });
+  }
+  window.UEOnShared = function () {
+    if (!window.UEAndroid || !window.UEAndroid.getShared) return;
+    var data = window.UEAndroid.getShared();
+    if (!data) return;
+    window.UEAndroid.clearShared();
+    feed(data);
+  };
+  window.addEventListener('load', function () { setTimeout(function () { window.UEOnShared(); }, 400); });
+})();
+</script>
+</body>
+</html>

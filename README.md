@@ -4,12 +4,16 @@
 
 ## 下载
 
-- **安卓 APK**：[点这里下载 ue-yintu.apk](https://github.com/youyi2608/ue-yintu/releases/latest/download/ue-yintu.apk)
+- **安卓版 APK（2.4.9）**：[ue-yintu.apk](https://github.com/youyi2608/ue-yintu/releases/latest/download/ue-yintu.apk)
   - 装好后长按图片 → 分享 → 选 ue隐图，相册里就会多一张
   - 首次安装需要允许「安装未知来源应用」
-- **电脑版（免安装）**：[ue-yintu-v2.3.1-standalone.zip](./ue-yintu-v2.3.1-standalone.zip) — 解压双击 `ue隐图.exe`
-- **手机网页版**：打开 [https://youyi2608.github.io/ue-yintu/](https://youyi2608.github.io/ue-yintu/)，在浏览器菜单里选「添加到主屏幕」
+  - 点一下图片就能保存；同一张图 10 秒内不会重复存
+- **电脑版（2.5.2，免安装）**：[ue-yintu-v2.5.2.exe](https://github.com/youyi2608/ue-yintu/releases/latest/download/ue-yintu-v2.5.2.exe)
+  - 单个 exe，双击就能用，不用安装；建议连 `说明.txt` 一起看
+  - 在后台运行时，复制一张图片 + 按热键，就能弹出解好的图（热键因电脑而异，面板上会写当前生效的那组）
 - **使用说明**：[说明.txt](./说明.txt)
+
+> 网页版已停止提供，只发上面两个文件。
 
 ## 作者
 
